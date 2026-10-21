@@ -740,7 +740,7 @@ function renderDiseaseResult(r, source){
 
   document.getElementById('disease-result').innerHTML = `
     <div class="result-panel">
-      ${source==='mock'?'<div class="alert alert-info" style="margin-bottom:16px">ℹ️ Demo result. Add GEMINI_API_KEY for live AI analysis via Gemini.</div>':source==='gemini'?'<div class="alert alert-success" style="margin-bottom:16px">✨ Analysed by Gemini Vision AI</div>':''}
+      ${source==='mock'?'<div class="alert alert-info" style="margin-bottom:16px">ℹ️ Demo result. The AI model may be loading — try again in 20 seconds, or add a free HF_API_TOKEN for priority access.</div>':source==='huggingface'?'<div class="alert alert-success" style="margin-bottom:16px">🤗 Analysed by Hugging Face Plant Disease AI (PlantVillage model)</div>':''}
       <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px">
         <div>
           <h3 style="font-family:\'DM Serif Display\',serif;font-size:20px;color:var(--forest)">${r.disease}</h3>

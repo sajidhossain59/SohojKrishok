@@ -1,49 +1,34 @@
 # 🌿 Smart Garden AI
 
-An agricultural intelligence platform with AI-powered features for modern farmers.
+Agricultural intelligence platform — weather, AI disease detection, crop planning, fertilizer calculator.
 
-## Features
+## AI Disease Detection
 
-| Module | Description |
-|--------|-------------|
-| 🌤️ **Weather & Climate** | 7-day forecasts, agricultural hazard alerts (heat stress, frost, fungal risk) |
-| 🔬 **Disease Detection** | Upload leaf photos — analysed by **Gemini Vision AI** (`gemini-2.0-flash`) |
-| 🌱 **Crop Recommender** | Monthly/seasonal crop calendar with yield, water, and growth data |
-| ⚗️ **Fertilizer Calculator** | NPK dosage, urea/compost/SSP/MOP amounts, pest treatment protocols |
+Uses the **Hugging Face free Inference API** with `linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification` — a MobileNetV2 model trained on the PlantVillage dataset (38 crop disease classes). **No billing required.**
 
-## Quick Start (Local)
+## Quick Start
 
 ```bash
 npm install
 cp .env.example .env
-# Add your API keys to .env
+# Optionally add your keys to .env
 npm start
 # Visit http://localhost:3000
 ```
 
 ## Deploy to Render
 
-1. Push this project to a GitHub repository
-2. Go to [render.com](https://render.com) → New → Web Service
-3. Connect your GitHub repo — Render auto-detects `render.yaml`
-4. Add environment variables in the Render dashboard:
-   - `OPENWEATHER_API_KEY` — from [openweathermap.org](https://openweathermap.org/api) (free)
-   - `GEMINI_API_KEY` — from [aistudio.google.com](https://aistudio.google.com) (free)
-
-> **Note:** The app works fully without API keys using realistic demo data. Add keys for live weather and real Gemini AI image analysis.
+1. Push to GitHub
+2. render.com → New → Web Service → connect repo
+3. Render auto-detects `render.yaml`
+4. Add environment variables (both optional):
+   - `OPENWEATHER_API_KEY` — openweathermap.org (free)
+   - `HF_API_TOKEN` — huggingface.co/settings/tokens (free read token, higher rate limits)
 
 ## Environment Variables
 
 | Variable | Required | Source |
 |----------|----------|--------|
-| `OPENWEATHER_API_KEY` | Optional | openweathermap.org (free tier) |
-| `GEMINI_API_KEY` | Optional | aistudio.google.com (free tier) |
-| `PORT` | Auto-set | Set by Render automatically |
-
-## Tech Stack
-
-- **Backend:** Node.js + Express
-- **Frontend:** Vanilla JS, CSS custom properties, Google Fonts
-- **AI:** Google Gemini Vision API — `gemini-2.0-flash` (disease detection)
-- **Weather:** OpenWeatherMap API
-- **Deploy:** Render.com (`render.yaml` included)
+| `OPENWEATHER_API_KEY` | Optional | openweathermap.org |
+| `HF_API_TOKEN` | Optional | huggingface.co/settings/tokens |
+| `PORT` | Auto | Set by Render |

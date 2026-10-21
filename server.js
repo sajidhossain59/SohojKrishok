@@ -71,55 +71,35 @@ app.post('/api/disease-detect', upload.single('leaf'), async (req, res) => {
 
     const mimeType = req.file ? req.file.mimetype : 'image/jpeg';
 
-    // Use Gemini Vision API if key available
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (apiKey && imageData) {
-      const GEMINI_MODEL = 'gemini-2.0-flash';
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{
-              parts: [
-                {
-                  inline_data: {
-                    mime_type: mimeType,
-                    data: imageData
-                  }
-                },
-                {
-                  text: `You are an expert agricultural plant pathologist. Analyze this leaf image and provide a JSON response ONLY with this exact structure:
-{
-  "disease": "Disease name or Healthy",
-  "confidence": 85,
-  "severity": "Mild|Moderate|Severe|None",
-  "symptoms": ["symptom1", "symptom2", "symptom3"],
-  "causes": "Brief explanation of causes",
-  "treatment": ["treatment step 1", "treatment step 2", "treatment step 3"],
-  "prevention": ["prevention tip 1", "prevention tip 2"],
-  "affectedCrop": "Crop name if identifiable",
-  "urgency": "Low|Medium|High|Critical"
-}
-Return ONLY valid JSON, no markdown, no code fences.`
-                }
-              ]
-            }],
-            generationConfig: {
-              temperature: 0.2,
-              maxOutputTokens: 1024
-            }
-          })
-        }
-      );
-      const aiData = await response.json();
-      const text = aiData.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+    // Use Hugging Face free Inference API — plant disease classification model
+    // Free token from huggingface.co/settings/tokens (read-only, no billing needed)
+    const apiKey = process.env.HF_API_TOKEN;
+    if (imageData) {
       try {
-        const result = JSON.parse(text.replace(/```json|```/g, '').trim());
-        return res.json({ success: true, result, source: 'gemini' });
-      } catch {
-        return res.json({ success: true, result: getMockDisease(), source: 'mock' });
+        const imgBuffer = Buffer.from(imageData, 'base64');
+
+        // Primary model: MobileNetV2 trained on PlantVillage (38 disease classes)
+        const HF_MODEL = 'linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification';
+        const headers = { 'Content-Type': 'application/octet-stream' };
+        if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
+
+        const hfRes = await fetch(
+          `https://api-inference.huggingface.co/models/${HF_MODEL}`,
+          { method: 'POST', headers, body: imgBuffer }
+        );
+
+        if (!hfRes.ok) throw new Error(`HF returned ${hfRes.status}`);
+        const hfData = await hfRes.json();
+
+        // hfData is array of { label, score } sorted by confidence
+        if (Array.isArray(hfData) && hfData.length > 0) {
+          const top = hfData[0];
+          const result = mapHFLabelToResult(top.label, Math.round(top.score * 100));
+          return res.json({ success: true, result, source: 'huggingface' });
+        }
+      } catch (hfErr) {
+        console.error('HF inference error:', hfErr.message);
+        // Fall through to mock
       }
     }
 
@@ -167,6 +147,104 @@ function getMockDisease() {
     }
   ];
   return diseases[Math.floor(Math.random() * diseases.length)];
+}
+
+// ─── Map HuggingFace PlantVillage label → rich result object ────────────────
+function mapHFLabelToResult(rawLabel, confidence) {
+  // PlantVillage labels look like: "Tomato___Early_blight" or "Potato___healthy"
+  const clean = rawLabel.replace(/___/g, ' — ').replace(/_/g, ' ');
+  const parts = rawLabel.split('___');
+  const crop = (parts[0] || 'Unknown').replace(/_/g, ' ');
+  const diseasePart = (parts[1] || 'Unknown').replace(/_/g, ' ');
+  const isHealthy = /healthy/i.test(diseasePart);
+
+  // Disease knowledge base
+  const db = {
+    'Early blight': {
+      severity: 'Moderate', urgency: 'Medium',
+      symptoms: ['Brown circular lesions with concentric rings', 'Yellow halo around spots', 'Lower leaves affected first'],
+      causes: 'Fungal infection (Alternaria solani) favored by warm, humid conditions.',
+      treatment: ['Remove infected leaves immediately', 'Apply copper-based fungicide every 7–10 days', 'Improve plant spacing for airflow'],
+      prevention: ['Rotate crops annually', 'Use disease-resistant varieties', 'Avoid overhead irrigation'],
+    },
+    'Late blight': {
+      severity: 'Severe', urgency: 'High',
+      symptoms: ['Water-soaked lesions turning brown-black', 'White mold on leaf undersides in humid conditions', 'Rapid tissue death'],
+      causes: 'Oomycete Phytophthora infestans — spreads explosively in cool, wet weather.',
+      treatment: ['Apply mancozeb or chlorothalonil immediately', 'Remove and destroy all infected tissue', 'Avoid wetting foliage when irrigating'],
+      prevention: ['Plant certified disease-free seed', 'Ensure good drainage', 'Monitor closely during cool rainy periods'],
+    },
+    'Leaf scorch': {
+      severity: 'Mild', urgency: 'Low',
+      symptoms: ['Brown or tan patches at leaf margins', 'Crispy, burnt-looking edges', 'Yellowing between veins'],
+      causes: 'Environmental stress (heat, drought, excess fertilizer salts) or fungal infection.',
+      treatment: ['Improve irrigation consistency', 'Apply balanced fertilizer', 'Mulch around base to retain moisture'],
+      prevention: ['Water deeply and regularly', 'Avoid excessive nitrogen', 'Provide shade during peak heat'],
+    },
+    'Powdery mildew': {
+      severity: 'Mild', urgency: 'Low',
+      symptoms: ['White powdery coating on leaves', 'Distorted young shoots', 'Premature leaf drop'],
+      causes: 'Fungal spores spread by wind, thriving in dry conditions with high humidity at night.',
+      treatment: ['Spray with potassium bicarbonate solution', 'Apply neem oil weekly', 'Remove heavily infected parts'],
+      prevention: ['Ensure good air circulation', 'Avoid excess nitrogen fertilizer', 'Water at base of plant'],
+    },
+    'Leaf rust': {
+      severity: 'Severe', urgency: 'High',
+      symptoms: ['Orange-brown pustules on leaf undersides', 'Yellow spots on upper surface', 'Premature defoliation'],
+      causes: 'Rust fungi spread through airborne spores, favored by wet and cool conditions.',
+      treatment: ['Apply triazole fungicide immediately', 'Destroy all infected plant debris', 'Increase potassium nutrition'],
+      prevention: ['Plant resistant varieties', 'Crop rotation with non-hosts', 'Monitor humidity closely'],
+    },
+    'Bacterial spot': {
+      severity: 'Moderate', urgency: 'Medium',
+      symptoms: ['Small water-soaked spots turning dark brown', 'Yellow halo around lesions', 'Spots may fall out leaving holes'],
+      causes: 'Bacterial infection (Xanthomonas spp.) spread by rain splash and wind.',
+      treatment: ['Apply copper-based bactericide', 'Remove infected plant material', 'Avoid working with plants when wet'],
+      prevention: ['Use certified disease-free seed', 'Avoid overhead irrigation', 'Rotate crops with non-hosts'],
+    },
+    'Septoria leaf spot': {
+      severity: 'Moderate', urgency: 'Medium',
+      symptoms: ['Small circular spots with dark border and tan center', 'Tiny black dots (pycnidia) inside spots', 'Lower leaves affected first'],
+      causes: 'Fungus Septoria lycopersici, spread by rain and infected debris.',
+      treatment: ['Apply chlorothalonil or mancozeb', 'Remove lower infected leaves', 'Improve air circulation'],
+      prevention: ['Mulch to prevent soil splash', 'Stake plants upright', 'Use resistant varieties'],
+    },
+    'healthy': {
+      severity: 'None', urgency: 'Low',
+      symptoms: ['No visible disease symptoms', 'Vibrant green color', 'Normal leaf texture'],
+      causes: 'Plant appears healthy with no signs of disease.',
+      treatment: ['Continue regular monitoring', 'Maintain optimal nutrition and watering'],
+      prevention: ['Scout fields weekly', 'Keep records of crop health', 'Maintain soil health with organic matter'],
+    },
+  };
+
+  // Find best matching entry
+  let info = db['healthy'];
+  if (!isHealthy) {
+    const key = Object.keys(db).find(k =>
+      diseasePart.toLowerCase().includes(k.toLowerCase()) ||
+      k.toLowerCase().includes(diseasePart.toLowerCase().split(' ')[0])
+    );
+    info = key ? db[key] : {
+      severity: 'Moderate', urgency: 'Medium',
+      symptoms: ['Visible lesions or discoloration on leaf', 'Abnormal growth pattern', 'Possible wilting or necrosis'],
+      causes: `${diseasePart} detected — consult local agricultural extension for confirmation.`,
+      treatment: ['Isolate affected plants', 'Consult a plant pathologist', 'Apply broad-spectrum fungicide as precaution'],
+      prevention: ['Maintain crop hygiene', 'Use certified seed material', 'Practice crop rotation'],
+    };
+  }
+
+  return {
+    disease: isHealthy ? `Healthy ${crop}` : `${crop} — ${diseasePart}`,
+    confidence,
+    severity: info.severity,
+    symptoms: info.symptoms,
+    causes: info.causes,
+    treatment: info.treatment,
+    prevention: info.prevention,
+    affectedCrop: crop,
+    urgency: info.urgency,
+  };
 }
 
 // ─── Crop Recommendations ────────────────────────────────────────────────────
