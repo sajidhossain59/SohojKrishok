@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Smart Garden AI</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+<style>
+/* ─── TOKENS ─────────────────────────────────────────────────── */
+:root{
+  --forest:#1B3A2D;--forest-mid:#2E5C45;--sage:#4A7C59;--sage-light:#6FAB7A;
+  --amber:#E8A845;--amber-light:#F5C96A;--cream:#F7F4EE;--white:#FFFFFF;
+  --soil:#2C1810;--muted:#6B7B6E;--border:#D8E4DB;
+  --red:#C0392B;--orange:#E67E22;--blue:#2980B9;--purple:#8E44AD;
+  --shadow-sm:0 2px 8px rgba(27,58,45,.08);
+  --shadow-md:0 4px 20px rgba(27,58,45,.12);
+  --shadow-lg:0 8px 40px rgba(27,58,45,.18);
+  --r:12px;--r-lg:20px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--forest);min-height:100vh}
+
+/* ─── SIDEBAR ─────────────────────────────────────────────────── */
+.layout{display:flex;min-height:100vh}
+.sidebar{width:240px;background:var(--forest);color:var(--white);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;transition:.3s}
+.sidebar-logo{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sidebar-logo .leaf{font-size:28px;margin-bottom:6px}
+.sidebar-logo h1{font-family:'DM Serif Display',serif;font-size:18px;line-height:1.2;color:var(--amber)}
+.sidebar-logo span{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:.04em}
+.sidebar-nav{flex:1;padding:16px 0;overflow-y:auto}
+.nav-section-label{font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.3);padding:16px 24px 6px;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 24px;cursor:pointer;transition:.2s;border-left:3px solid transparent;font-size:14px;font-weight:500;color:rgba(255,255,255,.7)}
+.nav-item:hover{background:rgba(255,255,255,.07);color:var(--white)}
+.nav-item.active{background:rgba(232,168,69,.12);color:var(--amber);border-left-color:var(--amber)}
+.nav-item .icon{font-size:18px;width:22px;text-align:center}
+.sidebar-footer{padding:20px 24px;border-top:1px solid rgba(255,255,255,.1);font-size:12px;color:rgba(255,255,255,.35)}
+.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--forest);border:none;color:white;font-size:20px;padding:8px 10px;border-radius:8px;cursor:pointer}
+
+/* ─── MAIN ────────────────────────────────────────────────────── */
+.main{margin-left:240px;min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--forest)}
+.topbar-right{display:flex;align-items:center;gap:16px}
+.weather-pill{background:var(--forest);color:white;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:500}
+.user-avatar{width:36px;height:36px;border-radius:50%;background:var(--sage);display:flex;align-items:center;justify-content:center;color:white;font-size:14px;font-weight:600}
+.page{display:none;padding:32px;flex:1}
+.page.active{display:block}
+
+/* ─── HERO ────────────────────────────────────────────────────── */
+.hero{background:linear-gradient(135deg,var(--forest) 0%,var(--forest-mid) 60%,var(--sage) 100%);border-radius:var(--r-lg);padding:40px;color:white;margin-bottom:28px;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;right:-30px;top:-30px;width:200px;height:200px;background:rgba(232,168,69,.08);border-radius:50%;pointer-events:none}
+.hero-sub{font-size:12px;letter-spacing:.1em;color:var(--amber);margin-bottom:8px}
+.hero h2{font-family:'DM Serif Display',serif;font-size:32px;line-height:1.2;margin-bottom:16px}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+.hero-stat{background:rgba(255,255,255,.08);border-radius:10px;padding:14px 16px;backdrop-filter:blur(10px)}
+.hero-stat-val{font-size:22px;font-weight:700;color:var(--amber)}
+.hero-stat-label{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
+
+/* ─── CARDS ───────────────────────────────────────────────────── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{background:var(--white);border-radius:var(--r);padding:24px;box-shadow:var(--shadow-sm);border:1px solid var(--border)}
+.card-title{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:.03em;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.card-title .dot{width:6px;height:6px;border-radius:50%;background:var(--sage)}
+
+/* ─── SECTION HEADING ─────────────────────────────────────────── */
+.section-head{margin-bottom:20px}
+.section-head h2{font-family:'DM Serif Display',serif;font-size:26px;color:var(--forest)}
+.section-head p{font-size:14px;color:var(--muted);margin-top:4px}
+
+/* ─── BUTTONS ─────────────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:.2s;font-family:'DM Sans',sans-serif}
+.btn-primary{background:var(--forest);color:white}
+.btn-primary:hover{background:var(--forest-mid)}
+.btn-amber{background:var(--amber);color:var(--soil)}
+.btn-amber:hover{background:var(--amber-light)}
+.btn-outline{background:transparent;color:var(--forest);border:1.5px solid var(--forest)}
+.btn-outline:hover{background:var(--forest);color:white}
+.btn-sm{padding:7px 14px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* ─── FORM ────────────────────────────────────────────────────── */
+label{display:block;font-size:13px;font-weight:600;color:var(--forest);margin-bottom:6px}
+input,select,textarea{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--forest);background:white;outline:none;transition:.2s}
+input:focus,select:focus,textarea:focus{border-color:var(--sage)}
+.form-group{margin-bottom:16px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* ─── WEATHER ─────────────────────────────────────────────────── */
+.weather-main{background:linear-gradient(135deg,var(--forest),var(--sage));border-radius:var(--r-lg);padding:32px;color:white;margin-bottom:20px}
+.weather-big-temp{font-size:72px;font-weight:300;line-height:1}
+.weather-icon{font-size:48px}
+.weather-row{display:flex;align-items:flex-end;gap:24px}
+.weather-details{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px}
+.weather-detail{background:rgba(255,255,255,.12);border-radius:10px;padding:14px;backdrop-filter:blur(6px)}
+.weather-detail-val{font-size:18px;font-weight:600}
+.weather-detail-key{font-size:11px;opacity:.7;margin-top:2px}
+.forecast-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.forecast-day{background:var(--white);border-radius:10px;padding:12px 8px;text-align:center;box-shadow:var(--shadow-sm);border:1px solid var(--border)}
+.forecast-day.today{background:var(--forest);color:white;border-color:var(--forest)}
+.forecast-day .fday{font-size:11px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.forecast-day.today .fday{color:rgba(255,255,255,.7)}
+.forecast-day .ficon{font-size:20px;margin:4px 0}
+.forecast-day .ftemp{font-size:14px;font-weight:700}
+.hazard-card{background:var(--white);border-radius:var(--r);padding:16px;border-left:4px solid;display:flex;align-items:flex-start;gap:14px;box-shadow:var(--shadow-sm)}
+.hazard-icon{font-size:24px;flex-shrink:0}
+.hazard-title{font-weight:700;font-size:14px}
+.hazard-desc{font-size:13px;color:var(--muted);margin-top:2px}
+.alert-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ─── DISEASE ─────────────────────────────────────────────────── */
+.drop-zone{border:2px dashed var(--border);border-radius:var(--r-lg);padding:60px 40px;text-align:center;cursor:pointer;transition:.2s;background:white}
+.drop-zone:hover,.drop-zone.over{border-color:var(--sage);background:rgba(74,124,89,.05)}
+.drop-zone .dz-icon{font-size:48px;margin-bottom:12px}
+.drop-zone h3{font-family:'DM Serif Display',serif;font-size:20px;color:var(--forest);margin-bottom:6px}
+.drop-zone p{font-size:14px;color:var(--muted)}
+.sample-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+.sample-card{border:2px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;transition:.2s;background:white}
+.sample-card:hover{border-color:var(--sage);transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.sample-thumb{height:100px;display:flex;align-items:center;justify-content:center;font-size:52px;background:var(--cream)}
+.sample-name{padding:8px 10px;font-size:12px;font-weight:600;color:var(--forest)}
+.result-panel{background:white;border-radius:var(--r-lg);padding:28px;box-shadow:var(--shadow-md);border:1px solid var(--border)}
+.disease-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:700;margin-bottom:16px}
+.severity-none{background:#E8F5E9;color:#2E7D32}
+.severity-mild{background:#FFF9C4;color:#F9A825}
+.severity-moderate{background:#FFE0B2;color:#E65100}
+.severity-severe{background:#FFEBEE;color:#C62828}
+.severity-critical{background:#880000;color:white}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:16px}
+.result-section h4{font-size:13px;font-weight:700;color:var(--forest);margin-bottom:8px}
+.result-list{list-style:none;display:flex;flex-direction:column;gap:6px}
+.result-list li{font-size:13px;color:var(--muted);display:flex;gap:8px;line-height:1.4}
+.result-list li::before{content:'•';color:var(--sage);flex-shrink:0;font-weight:700}
+.confidence-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:6px}
+.confidence-fill{height:100%;background:linear-gradient(90deg,var(--sage),var(--amber));border-radius:4px;transition:.8s}
+.analyzing{text-align:center;padding:40px;color:var(--muted)}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--sage);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ─── CROPS ───────────────────────────────────────────────────── */
+.month-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px}
+.month-btn{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:white;font-size:13px;font-weight:500;cursor:pointer;transition:.2s;color:var(--muted)}
+.month-btn:hover{border-color:var(--sage);color:var(--sage)}
+.month-btn.active{background:var(--forest);color:white;border-color:var(--forest)}
+.cat-filter{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.cat-btn{padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:white;font-size:12px;cursor:pointer;transition:.2s}
+.cat-btn.active{background:var(--sage);color:white;border-color:var(--sage)}
+.crop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.crop-card{background:white;border-radius:var(--r);border:1.5px solid var(--border);overflow:hidden;cursor:pointer;transition:.2s;box-shadow:var(--shadow-sm)}
+.crop-card:hover{border-color:var(--sage);box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.crop-card-header{padding:20px;background:linear-gradient(135deg,var(--cream),white);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px}
+.crop-emoji{font-size:40px}
+.crop-card-name{font-family:'DM Serif Display',serif;font-size:20px}
+.crop-card-cat{font-size:11px;color:var(--muted);margin-top:2px;background:var(--border);display:inline-block;padding:2px 8px;border-radius:10px}
+.crop-card-body{padding:16px}
+.crop-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.crop-meta-item{font-size:12px}
+.crop-meta-item strong{display:block;color:var(--forest);font-size:13px}
+.crop-meta-item span{color:var(--muted)}
+.crop-season-tags{display:flex;gap:4px;flex-wrap:wrap}
+.season-tag{padding:3px 8px;background:rgba(74,124,89,.1);color:var(--sage);border-radius:4px;font-size:11px;font-weight:600}
+.crop-tip{font-size:12px;color:var(--muted);margin-top:10px;padding:8px;background:var(--cream);border-radius:6px;line-height:1.5}
+.no-crops{text-align:center;padding:60px 20px;color:var(--muted)}
+.no-crops .nc-icon{font-size:48px;margin-bottom:12px}
+
+/* ─── FERTILIZER ─────────────────────────────────────────────── */
+.calc-layout{display:grid;grid-template-columns:380px 1fr;gap:24px;align-items:start}
+.calc-form{background:white;border-radius:var(--r-lg);padding:28px;box-shadow:var(--shadow-sm);border:1px solid var(--border);position:sticky;top:80px}
+.calc-results{display:flex;flex-direction:column;gap:16px}
+.npk-visual{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.npk-bar-card{background:white;border-radius:var(--r);padding:20px;border:1px solid var(--border);text-align:center}
+.npk-letter{font-size:28px;font-weight:700;margin-bottom:4px}
+.npk-letter.n{color:#2980B9}
+.npk-letter.p{color:#E67E22}
+.npk-letter.k{color:#8E44AD}
+.npk-val{font-size:22px;font-weight:700;color:var(--forest)}
+.npk-unit{font-size:11px;color:var(--muted)}
+.result-table{width:100%;border-collapse:collapse}
+.result-table th{background:var(--cream);padding:10px 14px;font-size:12px;font-weight:700;color:var(--muted);text-align:left;border-bottom:1px solid var(--border)}
+.result-table td{padding:12px 14px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:top}
+.result-table tr:last-child td{border:none}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.tag-organic{background:#E8F5E9;color:#2E7D32}
+.tag-chemical{background:#E3F2FD;color:#1565C0}
+.tag-pest{background:#FCE4EC;color:#880E4F}
+.pest-card{background:white;border-radius:10px;padding:16px;border:1px solid var(--border);display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start}
+.pest-name{font-weight:700;font-size:14px;color:var(--forest);margin-bottom:4px}
+.pest-treatment{font-size:12px;color:var(--muted)}
+.pest-treatments{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.welcome-state{text-align:center;padding:80px 40px;color:var(--muted)}
+.welcome-state .ws-icon{font-size:64px;margin-bottom:16px}
+.welcome-state h3{font-family:'DM Serif Display',serif;font-size:22px;color:var(--forest);margin-bottom:8px}
+
+/* ─── ALERTS ──────────────────────────────────────────────────── */
+.alert{padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.alert-success{background:#E8F5E9;color:#2E7D32}
+.alert-warn{background:#FFF8E1;color:#F57F17}
+.alert-error{background:#FFEBEE;color:#C62828}
+.alert-info{background:#E3F2FD;color:#1565C0}
+
+/* ─── DASHBOARD QUICKLINK ─────────────────────────────────────── */
+.quick-links{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:24px}
+.ql{background:white;border-radius:var(--r);padding:22px;border:1.5px solid var(--border);cursor:pointer;transition:.2s;text-align:center;box-shadow:var(--shadow-sm)}
+.ql:hover{border-color:var(--sage);box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.ql-icon{font-size:32px;margin-bottom:10px}
+.ql-title{font-weight:600;font-size:14px;color:var(--forest)}
+.ql-desc{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* ─── RESPONSIVE ──────────────────────────────────────────────── */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .hamburger{display:block}
+  .topbar{padding-left:60px}
+  .page{padding:20px}
+  .grid-2,.grid-3,.form-row{grid-template-columns:1fr}
+  .calc-layout{grid-template-columns:1fr}
+  .calc-form{position:static}
+  .forecast-strip{grid-template-columns:repeat(4,1fr)}
+  .hero-stats{grid-template-columns:1fr 1fr}
+  .quick-links{grid-template-columns:1fr 1fr}
+}
+@media(max-width:480px){
+  .hero h2{font-size:24px}
+  .weather-big-temp{font-size:52px}
+  .forecast-strip{grid-template-columns:repeat(3,1fr)}
+  .weather-details{grid-template-columns:1fr 1fr}
+  .npk-visual{grid-template-columns:1fr 1fr 1fr}
+  .alert-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- Hamburger -->
+<button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">☰</button>
+
+<div class="layout">
+<!-- ─── SIDEBAR ──────────────────────────────────────────────── -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="leaf">🌿</div>
+    <h1>Smart Garden AI</h1>
+    <span>Agricultural Intelligence</span>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Overview</div>
+    <div class="nav-item active" onclick="navigate('dashboard')">
+      <span class="icon">🏠</span> Dashboard
+    </div>
+    <div class="nav-section-label">Tools</div>
+    <div class="nav-item" onclick="navigate('weather')">
+      <span class="icon">🌤️</span> Weather & Climate
+    </div>
+    <div class="nav-item" onclick="navigate('disease')">
+      <span class="icon">🔬</span> Disease Detection
+    </div>
+    <div class="nav-item" onclick="navigate('crops')">
+      <span class="icon">🌱</span> Crop Recommender
+    </div>
+    <div class="nav-item" onclick="navigate('fertilizer')">
+      <span class="icon">⚗️</span> Fertilizer Calc
+    </div>
+  </nav>
+  <div class="sidebar-footer">Smart Garden AI v1.0<br/>© 2025 AgriTech</div>
+</aside>
+
+<!-- ─── MAIN ─────────────────────────────────────────────────── -->
+<main class="main">
+  <div class="topbar">
+    <span class="topbar-title" id="page-title">Dashboard</span>
+    <div class="topbar-right">
+      <span class="weather-pill" id="topbar-weather">🌤️ Loading…</span>
+      <div class="user-avatar">JR</div>
+    </div>
+  </div>
+
+  <!-- ── DASHBOARD ─────────────────────────────────────────── -->
+  <div class="page active" id="page-dashboard">
+    <div class="hero">
+      <div class="hero-sub">Welcome Back</div>
+      <h2>Your Farm Intelligence<br>Hub is Ready</h2>
+      <p style="font-size:14px;opacity:.75">Real-time insights for smarter growing decisions.</p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-val" id="dash-area">—</div>
+          <div class="hero-stat-label">Field Area (ha)</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-val" id="dash-crops">12</div>
+          <div class="hero-stat-label">Seasonal Crops</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-val" id="dash-temp">—</div>
+          <div class="hero-stat-label">Current Temp</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quick-links">
+      <div class="ql" onclick="navigate('weather')">
+        <div class="ql-icon">🌤️</div>
+        <div class="ql-title">Weather Forecast</div>
+        <div class="ql-desc">7-day forecast & alerts</div>
+      </div>
+      <div class="ql" onclick="navigate('disease')">
+        <div class="ql-icon">🔬</div>
+        <div class="ql-title">Disease Check</div>
+        <div class="ql-desc">Upload leaf for AI analysis</div>
+      </div>
+      <div class="ql" onclick="navigate('crops')">
+        <div class="ql-icon">🌱</div>
+        <div class="ql-title">Crop Planner</div>
+        <div class="ql-desc">Seasonal recommendations</div>
+      </div>
+      <div class="ql" onclick="navigate('fertilizer')">
+        <div class="ql-icon">⚗️</div>
+        <div class="ql-title">Fertilizer Calc</div>
+        <div class="ql-desc">NPK & pest protocols</div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:24px">
+      <div class="card" id="dash-weather-card">
+        <div class="card-title"><span class="dot"></span> Today's Weather</div>
+        <div id="dash-weather-inner" style="color:var(--muted);font-size:14px">Loading…</div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="dot"></span> Current Month Crops</div>
+        <div id="dash-crops-list" style="display:flex;flex-wrap:wrap;gap:8px;font-size:14px">Loading…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── WEATHER ────────────────────────────────────────────── -->
+  <div class="page" id="page-weather">
+    <div class="section-head">
+      <h2>Weather & Climate Insights</h2>
+      <p>Real-time agricultural weather data and hazard alerts for your region</p>
+    </div>
+    <div class="card" style="margin-bottom:20px">
+      <div style="display:flex;gap:12px;align-items:flex-end">
+        <div class="form-group" style="flex:1;margin:0">
+          <label>City / Location</label>
+          <input id="weather-city" type="text" placeholder="Enter city name…" value="Dhaka"/>
+        </div>
+        <button class="btn btn-primary" onclick="loadWeather()">🔍 Get Weather</button>
+      </div>
+    </div>
+    <div id="weather-content">
+      <div class="analyzing"><div class="spinner"></div>Loading weather data…</div>
+    </div>
+  </div>
+
+  <!-- ── DISEASE ────────────────────────────────────────────── -->
+  <div class="page" id="page-disease">
+    <div class="section-head">
+      <h2>AI Crop Disease Detection</h2>
+      <p>Upload a leaf photo for instant AI-powered disease analysis and treatment advice</p>
+    </div>
+    <div class="grid-2" style="align-items:start">
+      <div>
+        <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+          <div class="dz-icon">🍃</div>
+          <h3>Drop Leaf Image Here</h3>
+          <p>Click to upload or drag & drop<br><small>JPG, PNG — max 10MB</small></p>
+          <input type="file" id="file-input" accept="image/*" style="display:none" onchange="handleFileSelect(event)"/>
+        </div>
+        <div style="margin:16px 0;text-align:center;color:var(--muted);font-size:13px">— or choose a sample leaf —</div>
+        <div class="sample-grid">
+          <div class="sample-card" onclick="analyzeFromSample('tomato','🍅 Tomato Leaf')">
+            <div class="sample-thumb">🍅</div>
+            <div class="sample-name">Tomato Leaf</div>
+          </div>
+          <div class="sample-card" onclick="analyzeFromSample('rice','🌾 Rice Leaf')">
+            <div class="sample-thumb">🌾</div>
+            <div class="sample-name">Rice Leaf</div>
+          </div>
+          <div class="sample-card" onclick="analyzeFromSample('wheat','🌿 Wheat Leaf')">
+            <div class="sample-thumb">🌿</div>
+            <div class="sample-name">Wheat Leaf</div>
+          </div>
+          <div class="sample-card" onclick="analyzeFromSample('mango','🥭 Mango Leaf')">
+            <div class="sample-thumb">🥭</div>
+            <div class="sample-name">Mango Leaf</div>
+          </div>
+          <div class="sample-card" onclick="analyzeFromSample('cucumber','🥒 Cucumber Leaf')">
+            <div class="sample-thumb">🥒</div>
+            <div class="sample-name">Cucumber Leaf</div>
+          </div>
+          <div class="sample-card" onclick="analyzeFromSample('potato','🥔 Potato Leaf')">
+            <div class="sample-thumb">🥔</div>
+            <div class="sample-name">Potato Leaf</div>
+          </div>
+        </div>
+      </div>
+      <div id="disease-result">
+        <div class="welcome-state">
+          <div class="ws-icon">🔬</div>
+          <h3>Ready to Analyse</h3>
+          <p>Upload a leaf image or select a sample to get instant AI disease diagnosis with treatment recommendations.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CROPS ──────────────────────────────────────────────── -->
+  <div class="page" id="page-crops">
+    <div class="section-head">
+      <h2>Seasonal Crop Recommender</h2>
+      <p>Discover the best crops to plant this month based on season, water needs, and yield potential</p>
+    </div>
+    <div class="month-filter" id="month-filter"></div>
+    <div class="cat-filter" id="cat-filter"></div>
+    <div class="crop-grid" id="crop-grid"></div>
+  </div>
+
+  <!-- ── FERTILIZER ─────────────────────────────────────────── -->
+  <div class="page" id="page-fertilizer">
+    <div class="section-head">
+      <h2>Fertilizer & Pesticide Calculator</h2>
+      <p>Precision dosage calculations with organic, chemical, and pest control protocols</p>
+    </div>
+    <div class="calc-layout">
+      <div class="calc-form">
+        <div class="form-group">
+          <label>🌱 Select Crop</label>
+          <select id="fert-crop">
+            <option value="">— Choose crop —</option>
+            <option>Rice</option><option>Wheat</option><option>Maize</option>
+            <option>Tomato</option><option>Potato</option><option>Onion</option>
+            <option>Cucumber</option><option>Chili</option><option>Lentil</option>
+            <option>Sunflower</option><option>Banana</option><option>Mango</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group" style="margin:0">
+            <label>📐 Field Area</label>
+            <input id="fert-area" type="number" placeholder="e.g. 2.5" min="0.1" step="0.1"/>
+          </div>
+          <div class="form-group" style="margin:0">
+            <label>📏 Unit</label>
+            <select id="fert-unit">
+              <option value="acres">Acres</option>
+              <option value="hectares">Hectares</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>🪨 Soil Type</label>
+          <select id="fert-soil">
+            <option value="Loam">Loam (balanced)</option>
+            <option value="Sandy">Sandy (low retention)</option>
+            <option value="Clay">Clay (high retention)</option>
+            <option value="Silt">Silty loam</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>💧 Irrigation Type</label>
+          <select id="fert-irrigation">
+            <option value="flood">Flood / Furrow</option>
+            <option value="drip">Drip Irrigation</option>
+            <option value="sprinkler">Sprinkler</option>
+            <option value="rain">Rain-fed</option>
+          </select>
+        </div>
+        <button class="btn btn-amber" style="width:100%" onclick="calcFertilizer()">⚗️ Calculate Dosage</button>
+      </div>
+      <div class="calc-results" id="fert-results">
+        <div class="welcome-state">
+          <div class="ws-icon">⚗️</div>
+          <h3>Enter Field Details</h3>
+          <p>Select your crop, area, and soil type to get tailored fertilizer and pesticide recommendations.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<!-- ─── overlay for mobile sidebar ───────────────────────────── -->
+<div id="overlay" onclick="toggleSidebar()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════════════════ */
+const pageNames = {
+  dashboard:'Dashboard', weather:'Weather & Climate',
+  disease:'Disease Detection', crops:'Crop Recommender', fertilizer:'Fertilizer Calc'
+};
+let currentPage = 'dashboard';
+
+function navigate(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelector(`.nav-item[onclick="navigate('${page}')"]`)?.classList.add('active');
+  document.getElementById('page-title').textContent = pageNames[page];
+  currentPage = page;
+  if(window.innerWidth<=900){ closeSidebar(); }
+  if(page==='weather' && !weatherLoaded) loadWeather();
+  if(page==='crops') renderCrops();
+}
+
+function toggleSidebar(){
+  const s = document.getElementById('sidebar');
+  const o = document.getElementById('overlay');
+  s.classList.toggle('open');
+  o.style.display = s.classList.contains('open') ? 'block' : 'none';
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').style.display='none';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   WEATHER
+═══════════════════════════════════════════════════════════ */
+let weatherLoaded = false;
+let weatherData = null;
+
+async function loadWeather(){
+  const city = document.getElementById('weather-city')?.value || 'Dhaka';
+  document.getElementById('weather-content').innerHTML = `<div class="analyzing"><div class="spinner"></div>Fetching weather for ${city}…</div>`;
+  try{
+    const res = await fetch(`/api/weather?city=${encodeURIComponent(city)}`);
+    const json = await res.json();
+    weatherData = json.data;
+    weatherLoaded = true;
+    renderWeather(weatherData, json.source==='mock');
+    updateDashboardWeather(weatherData);
+  }catch(e){
+    document.getElementById('weather-content').innerHTML = `<div class="alert alert-error">⚠️ Could not load weather. Check connection.</div>`;
+  }
+}
+
+function renderWeather(data, isMock){
+  const city = data.city?.name || 'Your Location';
+  const today = data.list[0];
+  const temp = Math.round(today.main.temp);
+  const humid = today.main.humidity;
+  const wind = (today.wind?.speed||0).toFixed(1);
+  const desc = today.weather[0].description;
+  const icon = getWeatherEmoji(today.weather[0].main);
+  const pop = Math.round((today.pop||0)*100);
+  const pressure = today.main.pressure;
+
+  // Hazard alerts
+  const hazards = generateHazards(today, data.list);
+  const hazardHTML = hazards.map(h=>`
+    <div class="hazard-card" style="border-color:${h.color}">
+      <div class="hazard-icon">${h.icon}</div>
+      <div><div class="hazard-title">${h.title}</div><div class="hazard-desc">${h.desc}</div></div>
+    </div>`).join('');
+
+  // Forecast
+  const seenDates = new Set();
+  const forecastDays = data.list.filter(item=>{
+    const d = new Date(item.dt_txt).toDateString();
+    if(!seenDates.has(d)){ seenDates.add(d); return true; } return false;
+  }).slice(0,7);
+
+  const forecastHTML = forecastDays.map((item,i)=>{
+    const d = new Date(item.dt_txt);
+    const dname = i===0 ? 'Today' : d.toLocaleDateString('en',{weekday:'short'});
+    const t = Math.round(item.main.temp);
+    const ico = getWeatherEmoji(item.weather[0].main);
+    return `<div class="forecast-day ${i===0?'today':''}">
+      <div class="fday">${dname}</div>
+      <div class="ficon">${ico}</div>
+      <div class="ftemp">${t}°C</div>
+      <div style="font-size:10px;opacity:.6;margin-top:2px">${Math.round((item.pop||0)*100)}% 💧</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('weather-content').innerHTML = `
+    ${isMock?'<div class="alert alert-warn">⚡ Demo data shown. Add OPENWEATHER_API_KEY for live weather.</div>':''}
+    <div class="weather-main">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px">
+        <div>
+          <div style="font-size:13px;opacity:.7;margin-bottom:4px">📍 ${city}</div>
+          <div class="weather-row">
+            <div class="weather-big-temp">${temp}°</div>
+            <div>
+              <div class="weather-icon">${icon}</div>
+              <div style="font-size:13px;opacity:.8;margin-top:4px;text-transform:capitalize">${desc}</div>
+            </div>
+          </div>
+        </div>
+        <div style="background:rgba(255,255,255,.1);border-radius:12px;padding:16px;font-size:13px;min-width:160px">
+          <div style="margin-bottom:6px">🌡️ Feels like <strong>${Math.round(today.main.feels_like)}°C</strong></div>
+          <div style="margin-bottom:6px">💧 Humidity <strong>${humid}%</strong></div>
+          <div style="margin-bottom:6px">🌬️ Wind <strong>${wind} m/s</strong></div>
+          <div>🌧️ Rain chance <strong>${pop}%</strong></div>
+        </div>
+      </div>
+      <div class="weather-details">
+        <div class="weather-detail"><div class="weather-detail-val">${humid}%</div><div class="weather-detail-key">Humidity</div></div>
+        <div class="weather-detail"><div class="weather-detail-val">${wind} m/s</div><div class="weather-detail-key">Wind Speed</div></div>
+        <div class="weather-detail"><div class="weather-detail-val">${pressure} hPa</div><div class="weather-detail-key">Pressure</div></div>
+        <div class="weather-detail"><div class="weather-detail-val">${pop}%</div><div class="weather-detail-key">Rain Chance</div></div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title"><span class="dot"></span> 7-Day Forecast</div>
+      <div class="forecast-strip">${forecastHTML}</div>
+    </div>
+    ${hazards.length ? `<div class="card">
+      <div class="card-title"><span class="dot" style="background:var(--amber)"></span> Agricultural Hazard Alerts</div>
+      <div class="alert-grid">${hazardHTML}</div>
+    </div>` : `<div class="alert alert-success">✅ No significant agricultural hazards detected for this period.</div>`}
+  `;
+
+  // Update topbar
+  document.getElementById('topbar-weather').textContent = `${icon} ${temp}°C ${city}`;
+  document.getElementById('dash-temp').textContent = temp+'°C';
+}
+
+function generateHazards(today, list){
+  const hazards = [];
+  const temp = today.main.temp;
+  const humid = today.main.humidity;
+  const rain = today.pop || 0;
+
+  if(temp > 35) hazards.push({icon:'🔥',title:'Heat Stress Alert',desc:`Temperature ${Math.round(temp)}°C — risk of crop wilting. Irrigate early morning.`,color:'#E53935'});
+  if(temp < 10) hazards.push({icon:'❄️',title:'Cold Stress Warning',desc:`Temperature ${Math.round(temp)}°C — frost risk. Cover sensitive crops tonight.`,color:'#1E88E5'});
+  if(humid > 85) hazards.push({icon:'🌫️',title:'High Humidity Alert',desc:`Humidity ${humid}% — increased fungal disease risk. Apply preventive fungicide.`,color:'#FB8C00'});
+  if(rain > 0.7) hazards.push({icon:'🌧️',title:'Heavy Rain Advisory',desc:'High rainfall expected. Ensure proper field drainage to prevent waterlogging.',color:'#039BE5'});
+  if(temp >= 28 && humid >= 75) hazards.push({icon:'🦠',title:'Disease Pressure High',desc:'Warm, humid conditions favor bacterial and fungal outbreaks. Scout fields daily.',color:'#8E24AA'});
+  return hazards;
+}
+
+function getWeatherEmoji(cond){
+  const map = {Clear:'☀️',Clouds:'⛅',Rain:'🌧️',Drizzle:'🌦️',Thunderstorm:'⛈️',Snow:'❄️',Mist:'🌫️',Fog:'🌫️',Haze:'🌫️'};
+  return map[cond] || '🌤️';
+}
+
+function updateDashboardWeather(data){
+  const today = data.list[0];
+  const temp = Math.round(today.main.temp);
+  const icon = getWeatherEmoji(today.weather[0].main);
+  const humid = today.main.humidity;
+  const city = data.city?.name || 'Your Location';
+  document.getElementById('dash-temp').textContent = temp+'°C';
+  document.getElementById('dash-weather-inner').innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px">
+      <span style="font-size:40px">${icon}</span>
+      <div><div style="font-size:28px;font-weight:700;color:var(--forest)">${temp}°C</div>
+      <div style="font-size:13px;color:var(--muted);text-transform:capitalize">${today.weather[0].description} · ${city}</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;color:var(--muted)">
+      <div>💧 Humidity: <strong>${humid}%</strong></div>
+      <div>🌬️ Wind: <strong>${(today.wind?.speed||0).toFixed(1)} m/s</strong></div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DISEASE DETECTION
+═══════════════════════════════════════════════════════════ */
+const dz = document.getElementById('drop-zone');
+dz.addEventListener('dragover', e=>{e.preventDefault();dz.classList.add('over')});
+dz.addEventListener('dragleave',()=>dz.classList.remove('over'));
+dz.addEventListener('drop',e=>{
+  e.preventDefault(); dz.classList.remove('over');
+  const file = e.dataTransfer.files[0];
+  if(file && file.type.startsWith('image/')) processLeafFile(file);
+});
+
+function handleFileSelect(e){
+  const file = e.target.files[0];
+  if(file) processLeafFile(file);
+}
+
+function processLeafFile(file){
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    showDiseasAnalyzing(URL.createObjectURL(file));
+    const base64 = ev.target.result.split(',')[1];
+    submitDiseaseB64(base64);
+  };
+  reader.readAsDataURL(file);
+}
+
+function analyzeFromSample(crop, name){
+  showDiseasAnalyzing(null, name);
+  // Simulate analysis for sample
+  setTimeout(()=>{
+    fetchDiseaseResult(null, null);
+  }, 400);
+}
+
+function showDiseasAnalyzing(previewUrl, name){
+  document.getElementById('disease-result').innerHTML = `
+    <div class="result-panel">
+      ${previewUrl ? `<img src="${previewUrl}" style="width:100%;height:200px;object-fit:cover;border-radius:10px;margin-bottom:16px"/>` : ''}
+      ${name ? `<div style="font-size:14px;font-weight:600;margin-bottom:12px">Analysing: ${name}</div>` : ''}
+      <div class="analyzing"><div class="spinner"></div>AI is analysing your leaf image…<br><small style="margin-top:8px;display:block;color:var(--muted)">Checking for 50+ plant diseases</small></div>
+    </div>`;
+}
+
+async function submitDiseaseB64(base64){
+  try{
+    const res = await fetch('/api/disease-detect',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({base64})
+    });
+    const json = await res.json();
+    renderDiseaseResult(json.result, json.source);
+  }catch(e){ renderDiseaseResult(getMockDiseaseClient()); }
+}
+
+async function fetchDiseaseResult(){
+  try{
+    const res = await fetch('/api/disease-detect',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({})});
+    const json = await res.json();
+    renderDiseaseResult(json.result, json.source);
+  }catch(e){ renderDiseaseResult(getMockDiseaseClient()); }
+}
+
+function getMockDiseaseClient(){
+  return {
+    disease:'Early Blight (Alternaria solani)',confidence:91,severity:'Moderate',
+    symptoms:['Brown circular lesions with concentric rings','Yellow halo around spots','Lower leaves affected first'],
+    causes:'Fungal infection favored by warm, humid conditions.',
+    treatment:['Remove infected leaves immediately','Apply copper-based fungicide every 7-10 days','Improve plant spacing'],
+    prevention:['Rotate crops annually','Use disease-resistant varieties','Avoid overhead irrigation'],
+    affectedCrop:'Tomato',urgency:'Medium'
+  };
+}
+
+function renderDiseaseResult(r, source){
+  const urgencyColors = {Low:'#2E7D32',Medium:'#F57F17',High:'#E65100',Critical:'#B71C1C'};
+  const severityClass = {None:'severity-none',Mild:'severity-mild',Moderate:'severity-moderate',Severe:'severity-severe',Critical:'severity-critical'};
+  const color = urgencyColors[r.urgency] || '#555';
+  const sc = severityClass[r.severity] || 'severity-mild';
+
+  document.getElementById('disease-result').innerHTML = `
+    <div class="result-panel">
+      ${source==='mock'?'<div class="alert alert-info" style="margin-bottom:16px">ℹ️ Demo result. Add GEMINI_API_KEY for live AI analysis via Gemini.</div>':source==='gemini'?'<div class="alert alert-success" style="margin-bottom:16px">✨ Analysed by Gemini Vision AI</div>':''}
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+        <div>
+          <h3 style="font-family:\'DM Serif Display\',serif;font-size:20px;color:var(--forest)">${r.disease}</h3>
+          ${r.affectedCrop ? `<div style="font-size:13px;color:var(--muted);margin-top:2px">🌱 Affected crop: <strong>${r.affectedCrop}</strong></div>`:''}
+        </div>
+        <div style="text-align:right">
+          <div class="disease-badge ${sc}">${r.severity} Severity</div>
+          <div style="font-size:12px;color:${color};font-weight:700;margin-top:4px">⚡ ${r.urgency} Urgency</div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Detection Confidence</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="confidence-bar" style="flex:1"><div class="confidence-fill" style="width:${r.confidence}%"></div></div>
+          <strong style="font-size:15px;color:var(--forest)">${r.confidence}%</strong>
+        </div>
+      </div>
+      <div style="font-size:13px;color:var(--muted);background:var(--cream);padding:12px;border-radius:8px;margin-bottom:16px;line-height:1.6">
+        <strong style="color:var(--forest)">Cause:</strong> ${r.causes}
+      </div>
+      <div class="result-grid">
+        <div class="result-section">
+          <h4>🔍 Symptoms Observed</h4>
+          <ul class="result-list">${(r.symptoms||[]).map(s=>`<li>${s}</li>`).join('')}</ul>
+        </div>
+        <div class="result-section">
+          <h4>✅ Prevention Tips</h4>
+          <ul class="result-list">${(r.prevention||[]).map(p=>`<li>${p}</li>`).join('')}</ul>
+        </div>
+      </div>
+      <div class="result-section" style="margin-top:16px">
+        <h4>💊 Treatment Protocol</h4>
+        <ul class="result-list">${(r.treatment||[]).map((t,i)=>`<li><span style="font-weight:700;color:var(--forest);min-width:16px">${i+1}.</span>${t}</li>`).join('')}</ul>
+      </div>
+      <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" onclick="document.getElementById('file-input').click()">📷 Analyse Another</button>
+        <button class="btn btn-outline btn-sm" onclick="printResult()">🖨️ Print Report</button>
+      </div>
+    </div>`;
+}
+
+function printResult(){
+  window.print();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CROP RECOMMENDER
+═══════════════════════════════════════════════════════════ */
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTH_NUMS = [1,2,3,4,5,6,7,8,9,10,11,12];
+let selectedMonth = new Date().getMonth()+1;
+let selectedCat = 'All';
+let cropsData = [];
+
+async function loadCrops(){
+  const res = await fetch('/api/crops');
+  const j = await res.json();
+  cropsData = j.crops;
+}
+
+function renderCrops(){
+  // Month buttons
+  const mf = document.getElementById('month-filter');
+  if(!mf.children.length){
+    mf.innerHTML = `<button class="month-btn ${selectedMonth===0?'active':''}" onclick="filterMonth(0)">All Months</button>`
+      + MONTHS.map((m,i)=>`<button class="month-btn ${selectedMonth===i+1?'active':''}" onclick="filterMonth(${i+1})">${m}</button>`).join('');
+  }
+  // Cat buttons
+  const cf = document.getElementById('cat-filter');
+  if(!cf.children.length){
+    const cats = ['All','Grain','Vegetable','Fruit','Pulse','Oilseed','Spice'];
+    cf.innerHTML = cats.map(c=>`<button class="cat-btn ${selectedCat===c?'active':''}" onclick="filterCat('${c}')">${c}</button>`).join('');
+  }
+  renderCropGrid();
+}
+
+function filterMonth(m){
+  selectedMonth = m;
+  document.querySelectorAll('.month-btn').forEach((b,i)=>b.classList.toggle('active',i===0?m===0:i===m));
+  renderCropGrid();
+}
+function filterCat(c){
+  selectedCat = c;
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.toggle('active',b.textContent===c));
+  renderCropGrid();
+}
+
+function renderCropGrid(){
+  const grid = document.getElementById('crop-grid');
+  let filtered = cropsData;
+  if(selectedMonth > 0) filtered = filtered.filter(c=>c.months.includes(selectedMonth));
+  if(selectedCat !== 'All') filtered = filtered.filter(c=>c.category===selectedCat);
+
+  if(!filtered.length){
+    grid.innerHTML = `<div class="no-crops" style="grid-column:1/-1">
+      <div class="nc-icon">🌾</div>
+      <p>No crops found for this filter. Try a different month or category.</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(c=>`
+    <div class="crop-card">
+      <div class="crop-card-header">
+        <div class="crop-emoji">${c.emoji}</div>
+        <div>
+          <div class="crop-card-name">${c.name}</div>
+          <div class="crop-card-cat">${c.category}</div>
+        </div>
+      </div>
+      <div class="crop-card-body">
+        <div class="crop-meta">
+          <div class="crop-meta-item"><strong>${c.growDays} days</strong><span>Growth period</span></div>
+          <div class="crop-meta-item"><strong>${c.yieldPerAcre}</strong><span>Yield / acre</span></div>
+          <div class="crop-meta-item"><strong>${c.water}</strong><span>Water need</span></div>
+          <div class="crop-meta-item"><strong>${c.temp}</strong><span>Temperature</span></div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">🪨 Soil: <strong style="color:var(--forest)">${c.soil}</strong></div>
+        <div class="crop-season-tags">${c.season.map(s=>`<span class="season-tag">${s}</span>`).join('')}</div>
+        <div class="crop-tip">💡 ${c.tips}</div>
+      </div>
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FERTILIZER CALC
+═══════════════════════════════════════════════════════════ */
+async function calcFertilizer(){
+  const crop = document.getElementById('fert-crop').value;
+  const area = parseFloat(document.getElementById('fert-area').value);
+  const unit = document.getElementById('fert-unit').value;
+  const soil = document.getElementById('fert-soil').value;
+  const irr  = document.getElementById('fert-irrigation').value;
+
+  if(!crop){ showAlert('fert-results','Please select a crop.','error'); return; }
+  if(!area || area<=0){ showAlert('fert-results','Please enter a valid area.','error'); return; }
+
+  document.getElementById('fert-results').innerHTML = `<div class="analyzing"><div class="spinner"></div>Calculating dosage…</div>`;
+
+  try{
+    const res = await fetch('/api/fertilizer',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({crop,area,unit,soilType:soil,irrigationType:irr})
+    });
+    const d = await res.json();
+    renderFertResult(d);
+  }catch(e){
+    document.getElementById('fert-results').innerHTML = `<div class="alert alert-error">Error calculating. Try again.</div>`;
+  }
+}
+
+function renderFertResult(d){
+  const pestRows = d.pestProtocols.map(p=>`
+    <div class="pest-card">
+      <div>
+        <div class="pest-name">🐛 ${p.pest}</div>
+        <div class="pest-treatments">
+          <div class="pest-treatment"><span class="tag tag-chemical">Chemical</span> ${p.chemical} — <strong>${p.dose}</strong></div>
+          <div class="pest-treatment"><span class="tag tag-organic">Organic</span> ${p.organic}</div>
+        </div>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('fert-results').innerHTML = `
+    <!-- NPK Header -->
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> NPK Requirement — ${d.crop} (${d.area} ${d.unit} = ${d.areaInHa} ha)</div>
+      <div class="npk-visual">
+        <div class="npk-bar-card">
+          <div class="npk-letter n">N</div>
+          <div class="npk-val">${d.npk.N}</div>
+          <div class="npk-unit">kg Nitrogen</div>
+        </div>
+        <div class="npk-bar-card">
+          <div class="npk-letter p">P</div>
+          <div class="npk-val">${d.npk.P}</div>
+          <div class="npk-unit">kg Phosphorus</div>
+        </div>
+        <div class="npk-bar-card">
+          <div class="npk-letter k">K</div>
+          <div class="npk-val">${d.npk.K}</div>
+          <div class="npk-unit">kg Potassium</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chemical -->
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:#2980B9"></span> Chemical Fertilizers <span class="tag tag-chemical" style="margin-left:auto">Chemical</span></div>
+      <table class="result-table">
+        <tr><th>Fertilizer</th><th>Amount</th><th>Application Schedule</th></tr>
+        <tr><td><strong>Urea (46% N)</strong></td><td><strong>${d.chemical.urea.amount} ${d.chemical.urea.unit}</strong></td><td style="color:var(--muted)">${d.chemical.urea.schedule}</td></tr>
+        <tr><td><strong>SSP (16% P₂O₅)</strong></td><td><strong>${d.chemical.ssp.amount} ${d.chemical.ssp.unit}</strong></td><td style="color:var(--muted)">${d.chemical.ssp.schedule}</td></tr>
+        <tr><td><strong>MOP (60% K₂O)</strong></td><td><strong>${d.chemical.mop.amount} ${d.chemical.mop.unit}</strong></td><td style="color:var(--muted)">${d.chemical.mop.schedule}</td></tr>
+      </table>
+    </div>
+
+    <!-- Organic -->
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:#2E7D32"></span> Organic Inputs <span class="tag tag-organic" style="margin-left:auto">Organic</span></div>
+      <table class="result-table">
+        <tr><th>Input</th><th>Amount</th><th>Application Schedule</th></tr>
+        <tr><td><strong>Compost / FYM</strong></td><td><strong>${d.organic.compost.amount} ${d.organic.compost.unit}</strong></td><td style="color:var(--muted)">${d.organic.compost.schedule}</td></tr>
+        <tr><td><strong>Vermicompost</strong></td><td><strong>${d.organic.vermicompost.amount} ${d.organic.vermicompost.unit}</strong></td><td style="color:var(--muted)">${d.organic.vermicompost.schedule}</td></tr>
+        <tr><td><strong>Neem Cake</strong></td><td><strong>${d.organic.neem_cake.amount} ${d.organic.neem_cake.unit}</strong></td><td style="color:var(--muted)">${d.organic.neem_cake.schedule}</td></tr>
+      </table>
+    </div>
+
+    <!-- Pest Protocols -->
+    <div class="card">
+      <div class="card-title"><span class="dot" style="background:#C62828"></span> Pest & Disease Treatment Protocols <span class="tag tag-pest" style="margin-left:auto">Pest Control</span></div>
+      <div style="display:flex;flex-direction:column;gap:10px">${pestRows}</div>
+      <div class="alert alert-warn" style="margin-top:16px">⚠️ Always follow label instructions. Wear protective equipment when applying pesticides.</div>
+    </div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px">
+      <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Print Report</button>
+      <button class="btn btn-outline btn-sm" onclick="calcFertilizer()">🔄 Recalculate</button>
+    </div>`;
+}
+
+function showAlert(targetId, msg, type){
+  const el = document.getElementById(targetId);
+  el.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DASHBOARD CROPS
+═══════════════════════════════════════════════════════════ */
+function renderDashCrops(){
+  const month = new Date().getMonth()+1;
+  const monthName = MONTHS[month-1];
+  const available = cropsData.filter(c=>c.months.includes(month));
+  const el = document.getElementById('dash-crops-list');
+  if(available.length){
+    el.innerHTML = `<div style="font-size:12px;color:var(--muted);width:100%;margin-bottom:8px">Best crops to plant in <strong>${monthName}</strong>:</div>`
+      + available.slice(0,6).map(c=>`<span style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;background:rgba(74,124,89,.08);border-radius:6px;font-size:13px;border:1px solid var(--border)">${c.emoji} ${c.name}</span>`).join('');
+    document.getElementById('dash-crops').textContent = available.length;
+  } else {
+    el.innerHTML = `<span style="color:var(--muted);font-size:14px">No crops for ${monthName}</span>`;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════════ */
+async function init(){
+  await loadCrops();
+  renderDashCrops();
+  loadWeather(); // load weather silently for dashboard
+}
+
+init();
+</script>
+</body>
+</html>
