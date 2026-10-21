@@ -69,20 +69,19 @@ app.post('/api/disease-detect', upload.single('leaf'), async (req, res) => {
       ? req.file.buffer.toString('base64')
       : req.body.base64;
 
-    const mimeType = req.file ? req.file.mimetype : 'image/jpeg';
-
-    // Use Hugging Face free Inference API — plant disease classification model
-    // Free token from huggingface.co/settings/tokens (read-only, no billing needed)
-    const apiKey = process.env.HF_API_TOKEN;
+    const apiKey = process.env.HF_TOKEN || process.env.HF_API_TOKEN;
     if (imageData) {
       try {
         const imgBuffer = Buffer.from(imageData, 'base64');
 
-        // Primary model: MobileNetV2 trained on PlantVillage (38 disease classes)
+        // Using the model and provider setup
         const HF_MODEL = 'linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification';
-        const headers = { 'Content-Type': 'application/octet-stream' };
+        const headers = { 
+          'Content-Type': 'application/octet-stream'
+        };
         if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
 
+        // Calling Hugging Face Serverless Inference API with provider routing if applicable
         const hfRes = await fetch(
           `https://api-inference.huggingface.co/models/${HF_MODEL}`,
           { method: 'POST', headers, body: imgBuffer }
@@ -91,7 +90,6 @@ app.post('/api/disease-detect', upload.single('leaf'), async (req, res) => {
         if (!hfRes.ok) throw new Error(`HF returned ${hfRes.status}`);
         const hfData = await hfRes.json();
 
-        // hfData is array of { label, score } sorted by confidence
         if (Array.isArray(hfData) && hfData.length > 0) {
           const top = hfData[0];
           const result = mapHFLabelToResult(top.label, Math.round(top.score * 100));
@@ -103,7 +101,7 @@ app.post('/api/disease-detect', upload.single('leaf'), async (req, res) => {
       }
     }
 
-    // Mock disease detection
+    // Mock disease detection fallback
     res.json({ success: true, result: getMockDisease(), source: 'mock' });
   } catch (err) {
     res.json({ success: true, result: getMockDisease(), source: 'mock' });
