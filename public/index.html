@@ -40,9 +40,9 @@ body.bn .en-block{display:none}
 .layout{display:flex;min-height:100vh}
 .sidebar{width:240px;background:var(--forest);color:var(--white);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;transition:.3s}
 .sidebar-logo{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,.1)}
-.sidebar-logo h1{font-family:'DM Serif Display',serif;font-size:18px;line-height:1.2;color:var(--amber)}
-body.bn .sidebar-logo h1{font-family:'Hind Siliguri',sans-serif;font-size:16px}
-.sidebar-logo span{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:.04em}
+.sidebar-logo h1{font-family:'DM Serif Display',serif;font-size:22px;line-height:1.2;color:var(--amber)} /* Change font-size here (e.g., from 18px to 22px) */
+body.bn .sidebar-logo h1{font-family:'Hind Siliguri',sans-serif;font-size:20px} /* Change Bengali font-size here (e.g., from 16px to 20px) */
+.sidebar-logo span{font-size:13px;color:rgba(255,255,255,.5);letter-spacing:.04em} /* Change subtitle font-size here (e.g., from 11px to 13px) */
 .sidebar-nav{flex:1;padding:16px 0;overflow-y:auto}
 .nav-section-label{font-size:10px;letter-spacing:.06em;color:rgba(255,255,255,.3);padding:16px 24px 6px;text-transform:uppercase}
 .nav-item{display:flex;align-items:center;gap:12px;padding:11px 24px;cursor:pointer;transition:.2s;border-left:3px solid transparent;font-size:14px;font-weight:500;color:rgba(255,255,255,.7)}
@@ -222,6 +222,7 @@ body.bn .welcome-state h3{font-family:'Hind Siliguri',sans-serif}
 @media(max-width:900px){
   .sidebar{transform:translateX(-100%)}
   .sidebar.open{transform:translateX(0)}
+  .sidebar-logo{padding-top:80px}
   .main{margin-left:0}
   .hamburger{display:block}
   .topbar{padding-left:60px}
