@@ -95,7 +95,6 @@ app.post('/api/disease-detect', upload.single('leaf'), async (req, res) => {
               images: [`data:${mimeType};base64,${imageData}`],
               latitude: 23.8103,   // Dhaka default coords
               longitude: 90.4125,
-              similar_images: false,
             }),
           }
         );
