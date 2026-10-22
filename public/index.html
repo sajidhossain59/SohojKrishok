@@ -4,9 +4,8 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Smart Garden AI</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
-/* ─── TOKENS ─────────────────────────────────────────────────── */
 :root{
   --forest:#1B3A2D;--forest-mid:#2E5C45;--sage:#4A7C59;--sage-light:#6FAB7A;
   --amber:#E8A845;--amber-light:#F5C96A;--cream:#F7F4EE;--white:#FFFFFF;
@@ -20,16 +19,33 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--forest);min-height:100vh}
+body.bn{font-family:'Hind Siliguri',sans-serif}
 
-/* ─── SIDEBAR ─────────────────────────────────────────────────── */
+/* ── LANG TOGGLE ───────────────────────────────────────────── */
+.lang-toggle{display:flex;align-items:center;background:var(--cream);border-radius:20px;padding:3px;border:1.5px solid var(--border);gap:2px}
+.lang-btn{padding:4px 12px;border-radius:16px;border:none;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;background:transparent;color:var(--muted)}
+.lang-btn.active{background:var(--forest);color:white}
+body.bn .lang-btn.bn-btn,.lang-btn.en-btn{background:var(--forest);color:white}
+body.bn .lang-btn.en-btn{background:transparent;color:var(--muted)}
+.bn-text{display:none}
+.en-text{display:inline}
+body.bn .bn-text{display:inline}
+body.bn .en-text{display:none}
+.bn-block{display:none}
+.en-block{display:block}
+body.bn .bn-block{display:block}
+body.bn .en-block{display:none}
+
+/* ── SIDEBAR ───────────────────────────────────────────────── */
 .layout{display:flex;min-height:100vh}
 .sidebar{width:240px;background:var(--forest);color:var(--white);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;transition:.3s}
 .sidebar-logo{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,.1)}
 .sidebar-logo .leaf{font-size:28px;margin-bottom:6px}
 .sidebar-logo h1{font-family:'DM Serif Display',serif;font-size:18px;line-height:1.2;color:var(--amber)}
+body.bn .sidebar-logo h1{font-family:'Hind Siliguri',sans-serif;font-size:16px}
 .sidebar-logo span{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:.04em}
 .sidebar-nav{flex:1;padding:16px 0;overflow-y:auto}
-.nav-section-label{font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.3);padding:16px 24px 6px;text-transform:uppercase}
+.nav-section-label{font-size:10px;letter-spacing:.06em;color:rgba(255,255,255,.3);padding:16px 24px 6px;text-transform:uppercase}
 .nav-item{display:flex;align-items:center;gap:12px;padding:11px 24px;cursor:pointer;transition:.2s;border-left:3px solid transparent;font-size:14px;font-weight:500;color:rgba(255,255,255,.7)}
 .nav-item:hover{background:rgba(255,255,255,.07);color:var(--white)}
 .nav-item.active{background:rgba(232,168,69,.12);color:var(--amber);border-left-color:var(--amber)}
@@ -37,40 +53,40 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--forest
 .sidebar-footer{padding:20px 24px;border-top:1px solid rgba(255,255,255,.1);font-size:12px;color:rgba(255,255,255,.35)}
 .hamburger{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--forest);border:none;color:white;font-size:20px;padding:8px 10px;border-radius:8px;cursor:pointer}
 
-/* ─── MAIN ────────────────────────────────────────────────────── */
+/* ── MAIN ──────────────────────────────────────────────────── */
 .main{margin-left:240px;min-height:100vh;display:flex;flex-direction:column}
-.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;gap:12px;flex-wrap:wrap}
 .topbar-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--forest)}
-.topbar-right{display:flex;align-items:center;gap:16px}
-.weather-pill{background:var(--forest);color:white;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:500}
-.user-avatar{width:36px;height:36px;border-radius:50%;background:var(--sage);display:flex;align-items:center;justify-content:center;color:white;font-size:14px;font-weight:600}
+body.bn .topbar-title{font-family:'Hind Siliguri',sans-serif;font-size:20px}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.weather-pill{background:var(--forest);color:white;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:500;white-space:nowrap}
+.user-avatar{width:36px;height:36px;border-radius:50%;background:var(--sage);display:flex;align-items:center;justify-content:center;color:white;font-size:14px;font-weight:600;flex-shrink:0}
 .page{display:none;padding:32px;flex:1}
 .page.active{display:block}
 
-/* ─── HERO ────────────────────────────────────────────────────── */
+/* ── HERO ──────────────────────────────────────────────────── */
 .hero{background:linear-gradient(135deg,var(--forest) 0%,var(--forest-mid) 60%,var(--sage) 100%);border-radius:var(--r-lg);padding:40px;color:white;margin-bottom:28px;position:relative;overflow:hidden}
 .hero::after{content:'';position:absolute;right:-30px;top:-30px;width:200px;height:200px;background:rgba(232,168,69,.08);border-radius:50%;pointer-events:none}
-.hero-sub{font-size:12px;letter-spacing:.1em;color:var(--amber);margin-bottom:8px}
+.hero-sub{font-size:12px;letter-spacing:.08em;color:var(--amber);margin-bottom:8px}
 .hero h2{font-family:'DM Serif Display',serif;font-size:32px;line-height:1.2;margin-bottom:16px}
+body.bn .hero h2{font-family:'Hind Siliguri',sans-serif;font-size:26px}
 .hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
 .hero-stat{background:rgba(255,255,255,.08);border-radius:10px;padding:14px 16px;backdrop-filter:blur(10px)}
 .hero-stat-val{font-size:22px;font-weight:700;color:var(--amber)}
 .hero-stat-label{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
 
-/* ─── CARDS ───────────────────────────────────────────────────── */
+/* ── CARDS ─────────────────────────────────────────────────── */
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .card{background:var(--white);border-radius:var(--r);padding:24px;box-shadow:var(--shadow-sm);border:1px solid var(--border)}
 .card-title{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:.03em;margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.card-title .dot{width:6px;height:6px;border-radius:50%;background:var(--sage)}
-
-/* ─── SECTION HEADING ─────────────────────────────────────────── */
+.card-title .dot{width:6px;height:6px;border-radius:50%;background:var(--sage);flex-shrink:0}
 .section-head{margin-bottom:20px}
 .section-head h2{font-family:'DM Serif Display',serif;font-size:26px;color:var(--forest)}
+body.bn .section-head h2{font-family:'Hind Siliguri',sans-serif;font-size:22px}
 .section-head p{font-size:14px;color:var(--muted);margin-top:4px}
 
-/* ─── BUTTONS ─────────────────────────────────────────────────── */
-.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:.2s;font-family:'DM Sans',sans-serif}
+/* ── BUTTONS ───────────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:.2s;font-family:inherit}
 .btn-primary{background:var(--forest);color:white}
 .btn-primary:hover{background:var(--forest-mid)}
 .btn-amber{background:var(--amber);color:var(--soil)}
@@ -78,16 +94,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--forest
 .btn-outline{background:transparent;color:var(--forest);border:1.5px solid var(--forest)}
 .btn-outline:hover{background:var(--forest);color:white}
 .btn-sm{padding:7px 14px;font-size:13px}
-.btn:disabled{opacity:.5;cursor:not-allowed}
 
-/* ─── FORM ────────────────────────────────────────────────────── */
+/* ── FORM ──────────────────────────────────────────────────── */
 label{display:block;font-size:13px;font-weight:600;color:var(--forest);margin-bottom:6px}
-input,select,textarea{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--forest);background:white;outline:none;transition:.2s}
-input:focus,select:focus,textarea:focus{border-color:var(--sage)}
+input,select,textarea{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;color:var(--forest);background:white;outline:none;transition:.2s}
+input:focus,select:focus{border-color:var(--sage)}
 .form-group{margin-bottom:16px}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 
-/* ─── WEATHER ─────────────────────────────────────────────────── */
+/* ── WEATHER ───────────────────────────────────────────────── */
 .weather-main{background:linear-gradient(135deg,var(--forest),var(--sage));border-radius:var(--r-lg);padding:32px;color:white;margin-bottom:20px}
 .weather-big-temp{font-size:72px;font-weight:300;line-height:1}
 .weather-icon{font-size:48px}
@@ -104,16 +119,16 @@ input:focus,select:focus,textarea:focus{border-color:var(--sage)}
 .forecast-day .ficon{font-size:20px;margin:4px 0}
 .forecast-day .ftemp{font-size:14px;font-weight:700}
 .hazard-card{background:var(--white);border-radius:var(--r);padding:16px;border-left:4px solid;display:flex;align-items:flex-start;gap:14px;box-shadow:var(--shadow-sm)}
-.hazard-icon{font-size:24px;flex-shrink:0}
 .hazard-title{font-weight:700;font-size:14px}
 .hazard-desc{font-size:13px;color:var(--muted);margin-top:2px}
 .alert-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
-/* ─── DISEASE ─────────────────────────────────────────────────── */
+/* ── DISEASE ───────────────────────────────────────────────── */
 .drop-zone{border:2px dashed var(--border);border-radius:var(--r-lg);padding:60px 40px;text-align:center;cursor:pointer;transition:.2s;background:white}
 .drop-zone:hover,.drop-zone.over{border-color:var(--sage);background:rgba(74,124,89,.05)}
 .drop-zone .dz-icon{font-size:48px;margin-bottom:12px}
 .drop-zone h3{font-family:'DM Serif Display',serif;font-size:20px;color:var(--forest);margin-bottom:6px}
+body.bn .drop-zone h3{font-family:'Hind Siliguri',sans-serif}
 .drop-zone p{font-size:14px;color:var(--muted)}
 .sample-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
 .sample-card{border:2px solid var(--border);border-radius:10px;overflow:hidden;cursor:pointer;transition:.2s;background:white}
@@ -138,7 +153,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--sage)}
 .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--sage);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ─── CROPS ───────────────────────────────────────────────────── */
+/* ── CROPS ─────────────────────────────────────────────────── */
 .month-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:24px}
 .month-btn{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:white;font-size:13px;font-weight:500;cursor:pointer;transition:.2s;color:var(--muted)}
 .month-btn:hover{border-color:var(--sage);color:var(--sage)}
@@ -152,28 +167,24 @@ input:focus,select:focus,textarea:focus{border-color:var(--sage)}
 .crop-card-header{padding:20px;background:linear-gradient(135deg,var(--cream),white);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px}
 .crop-emoji{font-size:40px}
 .crop-card-name{font-family:'DM Serif Display',serif;font-size:20px}
+body.bn .crop-card-name{font-family:'Hind Siliguri',sans-serif}
 .crop-card-cat{font-size:11px;color:var(--muted);margin-top:2px;background:var(--border);display:inline-block;padding:2px 8px;border-radius:10px}
 .crop-card-body{padding:16px}
 .crop-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
-.crop-meta-item{font-size:12px}
 .crop-meta-item strong{display:block;color:var(--forest);font-size:13px}
-.crop-meta-item span{color:var(--muted)}
+.crop-meta-item span{color:var(--muted);font-size:12px}
 .crop-season-tags{display:flex;gap:4px;flex-wrap:wrap}
 .season-tag{padding:3px 8px;background:rgba(74,124,89,.1);color:var(--sage);border-radius:4px;font-size:11px;font-weight:600}
 .crop-tip{font-size:12px;color:var(--muted);margin-top:10px;padding:8px;background:var(--cream);border-radius:6px;line-height:1.5}
-.no-crops{text-align:center;padding:60px 20px;color:var(--muted)}
-.no-crops .nc-icon{font-size:48px;margin-bottom:12px}
 
-/* ─── FERTILIZER ─────────────────────────────────────────────── */
+/* ── FERTILIZER ────────────────────────────────────────────── */
 .calc-layout{display:grid;grid-template-columns:380px 1fr;gap:24px;align-items:start}
 .calc-form{background:white;border-radius:var(--r-lg);padding:28px;box-shadow:var(--shadow-sm);border:1px solid var(--border);position:sticky;top:80px}
 .calc-results{display:flex;flex-direction:column;gap:16px}
 .npk-visual{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .npk-bar-card{background:white;border-radius:var(--r);padding:20px;border:1px solid var(--border);text-align:center}
 .npk-letter{font-size:28px;font-weight:700;margin-bottom:4px}
-.npk-letter.n{color:#2980B9}
-.npk-letter.p{color:#E67E22}
-.npk-letter.k{color:#8E44AD}
+.npk-letter.n{color:#2980B9}.npk-letter.p{color:#E67E22}.npk-letter.k{color:#8E44AD}
 .npk-val{font-size:22px;font-weight:700;color:var(--forest)}
 .npk-unit{font-size:11px;color:var(--muted)}
 .result-table{width:100%;border-collapse:collapse}
@@ -184,22 +195,23 @@ input:focus,select:focus,textarea:focus{border-color:var(--sage)}
 .tag-organic{background:#E8F5E9;color:#2E7D32}
 .tag-chemical{background:#E3F2FD;color:#1565C0}
 .tag-pest{background:#FCE4EC;color:#880E4F}
-.pest-card{background:white;border-radius:10px;padding:16px;border:1px solid var(--border);display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start}
-.pest-name{font-weight:700;font-size:14px;color:var(--forest);margin-bottom:4px}
+.pest-card{background:white;border-radius:10px;padding:16px;border:1px solid var(--border)}
+.pest-name{font-weight:700;font-size:14px;color:var(--forest);margin-bottom:8px}
+.pest-treatments{display:flex;flex-direction:column;gap:6px}
 .pest-treatment{font-size:12px;color:var(--muted)}
-.pest-treatments{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 .welcome-state{text-align:center;padding:80px 40px;color:var(--muted)}
 .welcome-state .ws-icon{font-size:64px;margin-bottom:16px}
 .welcome-state h3{font-family:'DM Serif Display',serif;font-size:22px;color:var(--forest);margin-bottom:8px}
+body.bn .welcome-state h3{font-family:'Hind Siliguri',sans-serif}
 
-/* ─── ALERTS ──────────────────────────────────────────────────── */
+/* ── ALERTS ────────────────────────────────────────────────── */
 .alert{padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
 .alert-success{background:#E8F5E9;color:#2E7D32}
 .alert-warn{background:#FFF8E1;color:#F57F17}
 .alert-error{background:#FFEBEE;color:#C62828}
 .alert-info{background:#E3F2FD;color:#1565C0}
 
-/* ─── DASHBOARD QUICKLINK ─────────────────────────────────────── */
+/* ── QUICKLINKS ────────────────────────────────────────────── */
 .quick-links{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:24px}
 .ql{background:white;border-radius:var(--r);padding:22px;border:1.5px solid var(--border);cursor:pointer;transition:.2s;text-align:center;box-shadow:var(--shadow-sm)}
 .ql:hover{border-color:var(--sage);box-shadow:var(--shadow-md);transform:translateY(-2px)}
@@ -207,7 +219,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--sage)}
 .ql-title{font-weight:600;font-size:14px;color:var(--forest)}
 .ql-desc{font-size:12px;color:var(--muted);margin-top:4px}
 
-/* ─── RESPONSIVE ──────────────────────────────────────────────── */
+/* ── RESPONSIVE ────────────────────────────────────────────── */
 @media(max-width:900px){
   .sidebar{transform:translateX(-100%)}
   .sidebar.open{transform:translateX(0)}
@@ -215,86 +227,104 @@ input:focus,select:focus,textarea:focus{border-color:var(--sage)}
   .hamburger{display:block}
   .topbar{padding-left:60px}
   .page{padding:20px}
-  .grid-2,.grid-3,.form-row{grid-template-columns:1fr}
+  .grid-2,.form-row{grid-template-columns:1fr}
   .calc-layout{grid-template-columns:1fr}
   .calc-form{position:static}
   .forecast-strip{grid-template-columns:repeat(4,1fr)}
   .hero-stats{grid-template-columns:1fr 1fr}
   .quick-links{grid-template-columns:1fr 1fr}
+  .weather-details{grid-template-columns:1fr 1fr}
+  .alert-grid{grid-template-columns:1fr}
 }
 @media(max-width:480px){
   .hero h2{font-size:24px}
   .weather-big-temp{font-size:52px}
   .forecast-strip{grid-template-columns:repeat(3,1fr)}
-  .weather-details{grid-template-columns:1fr 1fr}
-  .npk-visual{grid-template-columns:1fr 1fr 1fr}
-  .alert-grid{grid-template-columns:1fr}
+  .quick-links{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
 <body>
 
-<!-- Hamburger -->
-<button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">☰</button>
+<button class="hamburger" onclick="toggleSidebar()">☰</button>
+<div id="overlay" onclick="closeSidebar()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99"></div>
 
 <div class="layout">
-<!-- ─── SIDEBAR ──────────────────────────────────────────────── -->
+<!-- ══ SIDEBAR ═══════════════════════════════════════════════ -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
     <div class="leaf">🌿</div>
-    <h1>Smart Garden AI</h1>
-    <span>Agricultural Intelligence</span>
+    <h1><span class="en-text">Smart Garden AI</span><span class="bn-text">স্মার্ট গার্ডেন এআই</span></h1>
+    <span><span class="en-text">Agricultural Intelligence</span><span class="bn-text">কৃষি বুদ্ধিমত্তা</span></span>
   </div>
   <nav class="sidebar-nav">
-    <div class="nav-section-label">Overview</div>
+    <div class="nav-section-label"><span class="en-text">Overview</span><span class="bn-text">সংক্ষিপ্ত</span></div>
     <div class="nav-item active" onclick="navigate('dashboard')">
-      <span class="icon">🏠</span> Dashboard
+      <span class="icon">🏠</span>
+      <span class="en-text">Dashboard</span><span class="bn-text">ড্যাশবোর্ড</span>
     </div>
-    <div class="nav-section-label">Tools</div>
+    <div class="nav-section-label"><span class="en-text">Tools</span><span class="bn-text">সরঞ্জাম</span></div>
     <div class="nav-item" onclick="navigate('weather')">
-      <span class="icon">🌤️</span> Weather & Climate
+      <span class="icon">🌤️</span>
+      <span class="en-text">Weather & Climate</span><span class="bn-text">আবহাওয়া ও জলবায়ু</span>
     </div>
     <div class="nav-item" onclick="navigate('disease')">
-      <span class="icon">🔬</span> Disease Detection
+      <span class="icon">🔬</span>
+      <span class="en-text">Disease Detection</span><span class="bn-text">রোগ শনাক্তকরণ</span>
     </div>
     <div class="nav-item" onclick="navigate('crops')">
-      <span class="icon">🌱</span> Crop Recommender
+      <span class="icon">🌱</span>
+      <span class="en-text">Crop Recommender</span><span class="bn-text">ফসল পরামর্শ</span>
     </div>
     <div class="nav-item" onclick="navigate('fertilizer')">
-      <span class="icon">⚗️</span> Fertilizer Calc
+      <span class="icon">⚗️</span>
+      <span class="en-text">Fertilizer Calc</span><span class="bn-text">সার হিসাবক</span>
     </div>
   </nav>
   <div class="sidebar-footer">Smart Garden AI v1.0<br/>© 2025 AgriTech</div>
 </aside>
 
-<!-- ─── MAIN ─────────────────────────────────────────────────── -->
+<!-- ══ MAIN ═══════════════════════════════════════════════════ -->
 <main class="main">
   <div class="topbar">
-    <span class="topbar-title" id="page-title">Dashboard</span>
+    <span class="topbar-title" id="page-title">
+      <span class="en-text">Dashboard</span><span class="bn-text">ড্যাশবোর্ড</span>
+    </span>
     <div class="topbar-right">
-      <span class="weather-pill" id="topbar-weather">🌤️ Loading…</span>
+      <span class="weather-pill" id="topbar-weather">🌤️ …</span>
+      <!-- LANG TOGGLE -->
+      <div class="lang-toggle">
+        <button class="lang-btn en-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn bn-btn" onclick="setLang('bn')">বাং</button>
+      </div>
       <div class="user-avatar">JR</div>
     </div>
   </div>
 
-  <!-- ── DASHBOARD ─────────────────────────────────────────── -->
+  <!-- ── DASHBOARD ────────────────────────────────────────── -->
   <div class="page active" id="page-dashboard">
     <div class="hero">
-      <div class="hero-sub">Welcome Back</div>
-      <h2>Your Farm Intelligence<br>Hub is Ready</h2>
-      <p style="font-size:14px;opacity:.75">Real-time insights for smarter growing decisions.</p>
+      <div class="hero-sub"><span class="en-text">Welcome Back</span><span class="bn-text">স্বাগতম</span></div>
+      <h2>
+        <span class="en-text">Your Farm Intelligence<br>Hub is Ready</span>
+        <span class="bn-text">আপনার খামার বুদ্ধিমত্তা<br>কেন্দ্র প্রস্তুত</span>
+      </h2>
+      <p style="font-size:14px;opacity:.75">
+        <span class="en-text">Real-time insights for smarter growing decisions.</span>
+        <span class="bn-text">স্মার্ট চাষের জন্য রিয়েল-টাইম তথ্য।</span>
+      </p>
       <div class="hero-stats">
         <div class="hero-stat">
           <div class="hero-stat-val" id="dash-area">—</div>
-          <div class="hero-stat-label">Field Area (ha)</div>
+          <div class="hero-stat-label"><span class="en-text">Field Area (ha)</span><span class="bn-text">জমির আয়তন (হেক্টর)</span></div>
         </div>
         <div class="hero-stat">
           <div class="hero-stat-val" id="dash-crops">12</div>
-          <div class="hero-stat-label">Seasonal Crops</div>
+          <div class="hero-stat-label"><span class="en-text">Seasonal Crops</span><span class="bn-text">মৌসুমি ফসল</span></div>
         </div>
         <div class="hero-stat">
           <div class="hero-stat-val" id="dash-temp">—</div>
-          <div class="hero-stat-label">Current Temp</div>
+          <div class="hero-stat-label"><span class="en-text">Current Temp</span><span class="bn-text">বর্তমান তাপমাত্রা</span></div>
         </div>
       </div>
     </div>
@@ -302,115 +332,101 @@ input:focus,select:focus,textarea:focus{border-color:var(--sage)}
     <div class="quick-links">
       <div class="ql" onclick="navigate('weather')">
         <div class="ql-icon">🌤️</div>
-        <div class="ql-title">Weather Forecast</div>
-        <div class="ql-desc">7-day forecast & alerts</div>
+        <div class="ql-title"><span class="en-text">Weather Forecast</span><span class="bn-text">আবহাওয়া পূর্বাভাস</span></div>
+        <div class="ql-desc"><span class="en-text">7-day forecast & alerts</span><span class="bn-text">৭ দিনের পূর্বাভাস</span></div>
       </div>
       <div class="ql" onclick="navigate('disease')">
         <div class="ql-icon">🔬</div>
-        <div class="ql-title">Disease Check</div>
-        <div class="ql-desc">Upload leaf for AI analysis</div>
+        <div class="ql-title"><span class="en-text">Disease Check</span><span class="bn-text">রোগ পরীক্ষা</span></div>
+        <div class="ql-desc"><span class="en-text">Upload leaf for AI analysis</span><span class="bn-text">পাতার ছবি আপলোড করুন</span></div>
       </div>
       <div class="ql" onclick="navigate('crops')">
         <div class="ql-icon">🌱</div>
-        <div class="ql-title">Crop Planner</div>
-        <div class="ql-desc">Seasonal recommendations</div>
+        <div class="ql-title"><span class="en-text">Crop Planner</span><span class="bn-text">ফসল পরিকল্পনা</span></div>
+        <div class="ql-desc"><span class="en-text">Seasonal recommendations</span><span class="bn-text">মৌসুমি পরামর্শ</span></div>
       </div>
       <div class="ql" onclick="navigate('fertilizer')">
         <div class="ql-icon">⚗️</div>
-        <div class="ql-title">Fertilizer Calc</div>
-        <div class="ql-desc">NPK & pest protocols</div>
+        <div class="ql-title"><span class="en-text">Fertilizer Calc</span><span class="bn-text">সার হিসাবক</span></div>
+        <div class="ql-desc"><span class="en-text">NPK & pest protocols</span><span class="bn-text">NPK ও কীটনাশক</span></div>
       </div>
     </div>
 
     <div class="grid-2" style="margin-top:24px">
-      <div class="card" id="dash-weather-card">
-        <div class="card-title"><span class="dot"></span> Today's Weather</div>
-        <div id="dash-weather-inner" style="color:var(--muted);font-size:14px">Loading…</div>
+      <div class="card">
+        <div class="card-title"><span class="dot"></span><span class="en-text">Today's Weather</span><span class="bn-text">আজকের আবহাওয়া</span></div>
+        <div id="dash-weather-inner" style="color:var(--muted);font-size:14px">
+          <span class="en-text">Loading…</span><span class="bn-text">লোড হচ্ছে…</span>
+        </div>
       </div>
       <div class="card">
-        <div class="card-title"><span class="dot"></span> Current Month Crops</div>
-        <div id="dash-crops-list" style="display:flex;flex-wrap:wrap;gap:8px;font-size:14px">Loading…</div>
+        <div class="card-title"><span class="dot"></span><span class="en-text">Current Month Crops</span><span class="bn-text">এই মাসের ফসল</span></div>
+        <div id="dash-crops-list" style="display:flex;flex-wrap:wrap;gap:8px;font-size:14px">…</div>
       </div>
     </div>
   </div>
 
-  <!-- ── WEATHER ────────────────────────────────────────────── -->
+  <!-- ── WEATHER ───────────────────────────────────────────── -->
   <div class="page" id="page-weather">
     <div class="section-head">
-      <h2>Weather & Climate Insights</h2>
-      <p>Real-time agricultural weather data and hazard alerts for your region</p>
+      <h2><span class="en-text">Weather & Climate Insights</span><span class="bn-text">আবহাওয়া ও জলবায়ু তথ্য</span></h2>
+      <p><span class="en-text">Real-time agricultural weather and hazard alerts for your region</span><span class="bn-text">আপনার অঞ্চলের কৃষি আবহাওয়া ও বিপদ সংকেত</span></p>
     </div>
     <div class="card" style="margin-bottom:20px">
-      <div style="display:flex;gap:12px;align-items:flex-end">
-        <div class="form-group" style="flex:1;margin:0">
-          <label>City / Location</label>
-          <input id="weather-city" type="text" placeholder="Enter city name…" value="Dhaka"/>
+      <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
+        <div class="form-group" style="flex:1;margin:0;min-width:180px">
+          <label><span class="en-text">City / Location</span><span class="bn-text">শহর / অবস্থান</span></label>
+          <input id="weather-city" type="text" placeholder="e.g. Dhaka" value="Dhaka"/>
         </div>
-        <button class="btn btn-primary" onclick="loadWeather()">🔍 Get Weather</button>
+        <button class="btn btn-primary" onclick="loadWeather()">🔍 <span class="en-text">Get Weather</span><span class="bn-text">আবহাওয়া দেখুন</span></button>
       </div>
     </div>
     <div id="weather-content">
-      <div class="analyzing"><div class="spinner"></div>Loading weather data…</div>
+      <div class="analyzing"><div class="spinner"></div><span class="en-text">Loading weather data…</span><span class="bn-text">আবহাওয়া তথ্য লোড হচ্ছে…</span></div>
     </div>
   </div>
 
-  <!-- ── DISEASE ────────────────────────────────────────────── -->
+  <!-- ── DISEASE ───────────────────────────────────────────── -->
   <div class="page" id="page-disease">
     <div class="section-head">
-      <h2>AI Crop Disease Detection</h2>
-      <p>Upload a leaf photo for instant AI-powered disease analysis and treatment advice</p>
+      <h2><span class="en-text">AI Crop Disease Detection</span><span class="bn-text">এআই ফসল রোগ শনাক্তকরণ</span></h2>
+      <p><span class="en-text">Upload a leaf photo for instant AI-powered disease analysis</span><span class="bn-text">তাৎক্ষণিক এআই রোগ বিশ্লেষণের জন্য পাতার ছবি আপলোড করুন</span></p>
     </div>
     <div class="grid-2" style="align-items:start">
       <div>
         <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
           <div class="dz-icon">🍃</div>
-          <h3>Drop Leaf Image Here</h3>
-          <p>Click to upload or drag & drop<br><small>JPG, PNG — max 10MB</small></p>
+          <h3><span class="en-text">Drop Leaf Image Here</span><span class="bn-text">পাতার ছবি এখানে ছাড়ুন</span></h3>
+          <p><span class="en-text">Click to upload or drag & drop<br><small>JPG, PNG — max 10MB</small></span><span class="bn-text">ক্লিক করুন বা ড্র্যাগ করুন<br><small>JPG, PNG — সর্বোচ্চ ১০MB</small></span></p>
           <input type="file" id="file-input" accept="image/*" style="display:none" onchange="handleFileSelect(event)"/>
         </div>
-        <div style="margin:16px 0;text-align:center;color:var(--muted);font-size:13px">— or choose a sample leaf —</div>
+        <div style="margin:16px 0;text-align:center;color:var(--muted);font-size:13px">
+          — <span class="en-text">or choose a sample leaf</span><span class="bn-text">বা নমুনা পাতা বেছে নিন</span> —
+        </div>
         <div class="sample-grid">
-          <div class="sample-card" onclick="analyzeFromSample('tomato','🍅 Tomato Leaf')">
-            <div class="sample-thumb">🍅</div>
-            <div class="sample-name">Tomato Leaf</div>
-          </div>
-          <div class="sample-card" onclick="analyzeFromSample('rice','🌾 Rice Leaf')">
-            <div class="sample-thumb">🌾</div>
-            <div class="sample-name">Rice Leaf</div>
-          </div>
-          <div class="sample-card" onclick="analyzeFromSample('wheat','🌿 Wheat Leaf')">
-            <div class="sample-thumb">🌿</div>
-            <div class="sample-name">Wheat Leaf</div>
-          </div>
-          <div class="sample-card" onclick="analyzeFromSample('mango','🥭 Mango Leaf')">
-            <div class="sample-thumb">🥭</div>
-            <div class="sample-name">Mango Leaf</div>
-          </div>
-          <div class="sample-card" onclick="analyzeFromSample('cucumber','🥒 Cucumber Leaf')">
-            <div class="sample-thumb">🥒</div>
-            <div class="sample-name">Cucumber Leaf</div>
-          </div>
-          <div class="sample-card" onclick="analyzeFromSample('potato','🥔 Potato Leaf')">
-            <div class="sample-thumb">🥔</div>
-            <div class="sample-name">Potato Leaf</div>
-          </div>
+          <div class="sample-card" onclick="analyzeFromSample('tomato')"><div class="sample-thumb">🍅</div><div class="sample-name"><span class="en-text">Tomato</span><span class="bn-text">টমেটো</span></div></div>
+          <div class="sample-card" onclick="analyzeFromSample('rice')"><div class="sample-thumb">🌾</div><div class="sample-name"><span class="en-text">Rice</span><span class="bn-text">ধান</span></div></div>
+          <div class="sample-card" onclick="analyzeFromSample('wheat')"><div class="sample-thumb">🌿</div><div class="sample-name"><span class="en-text">Wheat</span><span class="bn-text">গম</span></div></div>
+          <div class="sample-card" onclick="analyzeFromSample('mango')"><div class="sample-thumb">🥭</div><div class="sample-name"><span class="en-text">Mango</span><span class="bn-text">আম</span></div></div>
+          <div class="sample-card" onclick="analyzeFromSample('cucumber')"><div class="sample-thumb">🥒</div><div class="sample-name"><span class="en-text">Cucumber</span><span class="bn-text">শসা</span></div></div>
+          <div class="sample-card" onclick="analyzeFromSample('potato')"><div class="sample-thumb">🥔</div><div class="sample-name"><span class="en-text">Potato</span><span class="bn-text">আলু</span></div></div>
         </div>
       </div>
       <div id="disease-result">
         <div class="welcome-state">
           <div class="ws-icon">🔬</div>
-          <h3>Ready to Analyse</h3>
-          <p>Upload a leaf image or select a sample to get instant AI disease diagnosis with treatment recommendations.</p>
+          <h3><span class="en-text">Ready to Analyse</span><span class="bn-text">বিশ্লেষণের জন্য প্রস্তুত</span></h3>
+          <p><span class="en-text">Upload a leaf image or select a sample to get instant AI disease diagnosis.</span><span class="bn-text">তাৎক্ষণিক রোগ নির্ণয়ের জন্য পাতার ছবি আপলোড করুন বা নমুনা বেছে নিন।</span></p>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ── CROPS ──────────────────────────────────────────────── -->
+  <!-- ── CROPS ─────────────────────────────────────────────── -->
   <div class="page" id="page-crops">
     <div class="section-head">
-      <h2>Seasonal Crop Recommender</h2>
-      <p>Discover the best crops to plant this month based on season, water needs, and yield potential</p>
+      <h2><span class="en-text">Seasonal Crop Recommender</span><span class="bn-text">মৌসুমি ফসল পরামর্শ</span></h2>
+      <p><span class="en-text">Discover the best crops to plant this month</span><span class="bn-text">এই মাসে কোন ফসল লাগাবেন তা জানুন</span></p>
     </div>
     <div class="month-filter" id="month-filter"></div>
     <div class="cat-filter" id="cat-filter"></div>
@@ -420,59 +436,67 @@ input:focus,select:focus,textarea:focus{border-color:var(--sage)}
   <!-- ── FERTILIZER ─────────────────────────────────────────── -->
   <div class="page" id="page-fertilizer">
     <div class="section-head">
-      <h2>Fertilizer & Pesticide Calculator</h2>
-      <p>Precision dosage calculations with organic, chemical, and pest control protocols</p>
+      <h2><span class="en-text">Fertilizer & Pesticide Calculator</span><span class="bn-text">সার ও কীটনাশক হিসাবক</span></h2>
+      <p><span class="en-text">Precision dosage calculations with NPK and pest protocols</span><span class="bn-text">NPK মাত্রা ও কীটনাশক প্রোটোকল হিসাব</span></p>
     </div>
     <div class="calc-layout">
       <div class="calc-form">
         <div class="form-group">
-          <label>🌱 Select Crop</label>
+          <label>🌱 <span class="en-text">Select Crop</span><span class="bn-text">ফসল বেছে নিন</span></label>
           <select id="fert-crop">
-            <option value="">— Choose crop —</option>
-            <option>Rice</option><option>Wheat</option><option>Maize</option>
-            <option>Tomato</option><option>Potato</option><option>Onion</option>
-            <option>Cucumber</option><option>Chili</option><option>Lentil</option>
-            <option>Sunflower</option><option>Banana</option><option>Mango</option>
+            <option value=""><span class="en-text">— Choose crop —</span></option>
+            <option value="Rice">🌾 <span class="en-text">Rice</span> / ধান</option>
+            <option value="Wheat">🌿 <span class="en-text">Wheat</span> / গম</option>
+            <option value="Maize">🌽 <span class="en-text">Maize</span> / ভুট্টা</option>
+            <option value="Tomato">🍅 <span class="en-text">Tomato</span> / টমেটো</option>
+            <option value="Potato">🥔 <span class="en-text">Potato</span> / আলু</option>
+            <option value="Onion">🧅 <span class="en-text">Onion</span> / পেঁয়াজ</option>
+            <option value="Cucumber">🥒 <span class="en-text">Cucumber</span> / শসা</option>
+            <option value="Chili">🌶️ <span class="en-text">Chili</span> / মরিচ</option>
+            <option value="Lentil">🫘 <span class="en-text">Lentil</span> / মসুর</option>
+            <option value="Sunflower">🌻 <span class="en-text">Sunflower</span> / সূর্যমুখী</option>
+            <option value="Banana">🍌 <span class="en-text">Banana</span> / কলা</option>
+            <option value="Mango">🥭 <span class="en-text">Mango</span> / আম</option>
           </select>
         </div>
         <div class="form-row">
           <div class="form-group" style="margin:0">
-            <label>📐 Field Area</label>
+            <label>📐 <span class="en-text">Field Area</span><span class="bn-text">জমির আয়তন</span></label>
             <input id="fert-area" type="number" placeholder="e.g. 2.5" min="0.1" step="0.1"/>
           </div>
           <div class="form-group" style="margin:0">
-            <label>📏 Unit</label>
+            <label>📏 <span class="en-text">Unit</span><span class="bn-text">একক</span></label>
             <select id="fert-unit">
-              <option value="acres">Acres</option>
-              <option value="hectares">Hectares</option>
+              <option value="acres"><span class="en-text">Acres</span> / একর</option>
+              <option value="hectares"><span class="en-text">Hectares</span> / হেক্টর</option>
             </select>
           </div>
         </div>
         <div class="form-group">
-          <label>🪨 Soil Type</label>
+          <label>🪨 <span class="en-text">Soil Type</span><span class="bn-text">মাটির ধরন</span></label>
           <select id="fert-soil">
-            <option value="Loam">Loam (balanced)</option>
-            <option value="Sandy">Sandy (low retention)</option>
-            <option value="Clay">Clay (high retention)</option>
-            <option value="Silt">Silty loam</option>
+            <option value="Loam"><span class="en-text">Loam</span> / দোআঁশ</option>
+            <option value="Sandy"><span class="en-text">Sandy</span> / বালু মাটি</option>
+            <option value="Clay"><span class="en-text">Clay</span> / এঁটেল মাটি</option>
+            <option value="Silt"><span class="en-text">Silt</span> / পলি মাটি</option>
           </select>
         </div>
         <div class="form-group">
-          <label>💧 Irrigation Type</label>
+          <label>💧 <span class="en-text">Irrigation</span><span class="bn-text">সেচ পদ্ধতি</span></label>
           <select id="fert-irrigation">
-            <option value="flood">Flood / Furrow</option>
-            <option value="drip">Drip Irrigation</option>
-            <option value="sprinkler">Sprinkler</option>
-            <option value="rain">Rain-fed</option>
+            <option value="flood"><span class="en-text">Flood / Furrow</span> / বন্যা সেচ</option>
+            <option value="drip"><span class="en-text">Drip</span> / ড্রিপ সেচ</option>
+            <option value="sprinkler"><span class="en-text">Sprinkler</span> / স্প্রিংকলার</option>
+            <option value="rain"><span class="en-text">Rain-fed</span> / বৃষ্টিনির্ভর</option>
           </select>
         </div>
-        <button class="btn btn-amber" style="width:100%" onclick="calcFertilizer()">⚗️ Calculate Dosage</button>
+        <button class="btn btn-amber" style="width:100%" onclick="calcFertilizer()">⚗️ <span class="en-text">Calculate Dosage</span><span class="bn-text">মাত্রা হিসাব করুন</span></button>
       </div>
       <div class="calc-results" id="fert-results">
         <div class="welcome-state">
           <div class="ws-icon">⚗️</div>
-          <h3>Enter Field Details</h3>
-          <p>Select your crop, area, and soil type to get tailored fertilizer and pesticide recommendations.</p>
+          <h3><span class="en-text">Enter Field Details</span><span class="bn-text">জমির তথ্য দিন</span></h3>
+          <p><span class="en-text">Select crop, area and soil type to get fertilizer recommendations.</span><span class="bn-text">সার পরামর্শ পেতে ফসল, আয়তন ও মাটির ধরন দিন।</span></p>
         </div>
       </div>
     </div>
@@ -481,104 +505,209 @@ input:focus,select:focus,textarea:focus{border-color:var(--sage)}
 </main>
 </div>
 
-<!-- ─── overlay for mobile sidebar ───────────────────────────── -->
-<div id="overlay" onclick="toggleSidebar()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99"></div>
-
 <script>
-/* ═══════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════
+   LANGUAGE SYSTEM
+══════════════════════════════════════════════════════════════ */
+let lang = localStorage.getItem('sg-lang') || 'en';
+
+function setLang(l) {
+  lang = l;
+  localStorage.setItem('sg-lang', l);
+  document.body.classList.toggle('bn', l === 'bn');
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-btn.${l}-btn`)?.classList.add('active');
+  // Re-render dynamic content with new language
+  if (weatherData) renderWeather(weatherData, weatherSource === 'mock');
+  if (cropsData.length) renderCropGrid();
+  updatePageTitle();
+}
+
+// Apply saved language on load
+if (lang === 'bn') {
+  document.body.classList.add('bn');
+  document.querySelector('.bn-btn')?.classList.add('active');
+  document.querySelector('.en-btn')?.classList.remove('active');
+}
+
+// Translation helper
+const T = {
+  en: {
+    today:'Today', humidity:'Humidity', wind:'Wind Speed', pressure:'Pressure',
+    rainChance:'Rain Chance', feelsLike:'Feels like', forecast:'7-Day Forecast',
+    hazardAlerts:'Agricultural Hazard Alerts', noHazards:'No significant hazards detected.',
+    analyzing:'AI is analysing your leaf…', checkingDiseases:'Checking for 50+ plant diseases',
+    demoResult:'Demo result. The AI model may be loading — try again in 20 seconds.',
+    hfResult:'🤗 Analysed by Hugging Face Plant Disease AI',
+    detectionConf:'Detection Confidence', cause:'Cause',
+    symptoms:'Symptoms Observed', prevention:'Prevention Tips', treatment:'Treatment Protocol',
+    analyseAnother:'Analyse Another', printReport:'Print Report',
+    urgency:'Urgency', allMonths:'All Months',
+    growDays:'Growth period', yield:'Yield / acre', water:'Water need', temp:'Temperature',
+    soil:'Soil', tip:'Tip',
+    allCrops:'All', grain:'Grain', vegetable:'Vegetable', fruit:'Fruit', pulse:'Pulse', oilseed:'Oilseed', spice:'Spice',
+    noCrops:'No crops found for this filter. Try a different month or category.',
+    npkReq:'NPK Requirement', chemical:'Chemical Fertilizers', organic:'Organic Inputs',
+    pestProtocols:'Pest & Disease Protocols', pestWarn:'⚠️ Always wear protective equipment when applying pesticides.',
+    fertilizer:'Fertilizer', amount:'Amount', schedule:'Schedule', input:'Input',
+    print:'Print Report', recalc:'Recalculate',
+    cropErr:'Please select a crop.', areaErr:'Please enter a valid area.',
+    calculating:'Calculating dosage…',
+    bestCropsIn:'Best crops to plant in',
+    heatAlert:'Heat Stress Alert', coldAlert:'Cold Stress Warning',
+    humidAlert:'High Humidity Alert', rainAlert:'Heavy Rain Advisory',
+    diseaseAlert:'Disease Pressure High',
+    heatDesc:t=>`Temperature ${t}°C — risk of wilting. Irrigate early morning.`,
+    coldDesc:t=>`Temperature ${t}°C — frost risk. Cover sensitive crops tonight.`,
+    humidDesc:h=>`Humidity ${h}% — increased fungal disease risk. Apply preventive fungicide.`,
+    rainDesc:'High rainfall expected. Ensure proper field drainage.',
+    diseaseDesc:'Warm, humid conditions favor bacterial and fungal outbreaks.',
+    daysLabel:'days', acreLabel:'acre',
+    chemical_tag:'Chemical', organic_tag:'Organic',
+    kgNitrogen:'kg Nitrogen', kgPhosphorus:'kg Phosphorus', kgPotassium:'kg Potassium',
+  },
+  bn: {
+    today:'আজ', humidity:'আর্দ্রতা', wind:'বায়ুর গতি', pressure:'চাপ',
+    rainChance:'বৃষ্টির সম্ভাবনা', feelsLike:'অনুভূত তাপমাত্রা', forecast:'৭ দিনের পূর্বাভাস',
+    hazardAlerts:'কৃষি বিপদ সংকেত', noHazards:'কোনো উল্লেখযোগ্য বিপদ নেই।',
+    analyzing:'এআই পাতা বিশ্লেষণ করছে…', checkingDiseases:'৫০+ উদ্ভিদ রোগ পরীক্ষা করা হচ্ছে',
+    demoResult:'ডেমো ফলাফল। এআই মডেল লোড হচ্ছে — ২০ সেকেন্ড পরে আবার চেষ্টা করুন।',
+    hfResult:'🤗 হাগিং ফেস প্ল্যান্ট ডিজিজ এআই দ্বারা বিশ্লেষিত',
+    detectionConf:'শনাক্তকরণের নিশ্চিততা', cause:'কারণ',
+    symptoms:'লক্ষণসমূহ', prevention:'প্রতিরোধ টিপস', treatment:'চিকিৎসা পদ্ধতি',
+    analyseAnother:'আরেকটি বিশ্লেষণ করুন', printReport:'রিপোর্ট প্রিন্ট করুন',
+    urgency:'জরুরিত্ব', allMonths:'সব মাস',
+    growDays:'বৃদ্ধির সময়', yield:'ফলন / একর', water:'পানির প্রয়োজন', temp:'তাপমাত্রা',
+    soil:'মাটি', tip:'পরামর্শ',
+    allCrops:'সব', grain:'শস্য', vegetable:'সবজি', fruit:'ফল', pulse:'ডাল', oilseed:'তেলবীজ', spice:'মশলা',
+    noCrops:'এই ফিল্টারে কোনো ফসল নেই। অন্য মাস বা শ্রেণী চেষ্টা করুন।',
+    npkReq:'NPK প্রয়োজনীয়তা', chemical:'রাসায়নিক সার', organic:'জৈব উপকরণ',
+    pestProtocols:'কীটপতঙ্গ ও রোগ প্রোটোকল', pestWarn:'⚠️ কীটনাশক প্রয়োগের সময় সর্বদা সুরক্ষামূলক সরঞ্জাম পরুন।',
+    fertilizer:'সার', amount:'পরিমাণ', schedule:'সময়সূচি', input:'উপকরণ',
+    print:'রিপোর্ট প্রিন্ট', recalc:'পুনরায় হিসাব',
+    cropErr:'একটি ফসল বেছে নিন।', areaErr:'সঠিক আয়তন দিন।',
+    calculating:'মাত্রা হিসাব করা হচ্ছে…',
+    bestCropsIn:'এই মাসে সেরা ফসল',
+    heatAlert:'তাপ চাপ সতর্কতা', coldAlert:'শীত চাপ সতর্কতা',
+    humidAlert:'উচ্চ আর্দ্রতা সতর্কতা', rainAlert:'ভারি বৃষ্টি পরামর্শ',
+    diseaseAlert:'রোগের চাপ বেশি',
+    heatDesc:t=>`তাপমাত্রা ${t}°C — ফসল ঝরে পড়ার ঝুঁকি। সকালে সেচ দিন।`,
+    coldDesc:t=>`তাপমাত্রা ${t}°C — তুষারপাতের ঝুঁকি। সংবেদনশীল ফসল ঢাকুন।`,
+    humidDesc:h=>`আর্দ্রতা ${h}% — ছত্রাকজনিত রোগের ঝুঁকি। প্রতিরোধমূলক ছত্রাকনাশক দিন।`,
+    rainDesc:'ভারি বৃষ্টির সম্ভাবনা। মাঠে সঠিক পানি নিষ্কাশন নিশ্চিত করুন।',
+    diseaseDesc:'গরম, আর্দ্র আবহাওয়ায় ব্যাকটেরিয়া ও ছত্রাকজনিত রোগ বেশি হয়।',
+    daysLabel:'দিন', acreLabel:'একর',
+    chemical_tag:'রাসায়নিক', organic_tag:'জৈব',
+    kgNitrogen:'কেজি নাইট্রোজেন', kgPhosphorus:'কেজি ফসফরাস', kgPotassium:'কেজি পটাশিয়াম',
+  }
+};
+const t = () => T[lang];
+
+/* ══════════════════════════════════════════════════════════════
    NAVIGATION
-═══════════════════════════════════════════════════════════ */
-const pageNames = {
-  dashboard:'Dashboard', weather:'Weather & Climate',
-  disease:'Disease Detection', crops:'Crop Recommender', fertilizer:'Fertilizer Calc'
+══════════════════════════════════════════════════════════════ */
+const PAGE_TITLES = {
+  dashboard: { en:'Dashboard', bn:'ড্যাশবোর্ড' },
+  weather:   { en:'Weather & Climate', bn:'আবহাওয়া ও জলবায়ু' },
+  disease:   { en:'Disease Detection', bn:'রোগ শনাক্তকরণ' },
+  crops:     { en:'Crop Recommender', bn:'ফসল পরামর্শ' },
+  fertilizer:{ en:'Fertilizer Calc', bn:'সার হিসাবক' },
 };
 let currentPage = 'dashboard';
 
-function navigate(page){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
   document.querySelector(`.nav-item[onclick="navigate('${page}')"]`)?.classList.add('active');
-  document.getElementById('page-title').textContent = pageNames[page];
   currentPage = page;
-  if(window.innerWidth<=900){ closeSidebar(); }
-  if(page==='weather' && !weatherLoaded) loadWeather();
-  if(page==='crops') renderCrops();
+  updatePageTitle();
+  if (window.innerWidth <= 900) closeSidebar();
+  if (page === 'weather' && !weatherLoaded) loadWeather();
+  if (page === 'crops') renderCrops();
 }
 
-function toggleSidebar(){
+function updatePageTitle() {
+  const el = document.getElementById('page-title');
+  const titles = PAGE_TITLES[currentPage];
+  el.innerHTML = `<span class="en-text">${titles.en}</span><span class="bn-text">${titles.bn}</span>`;
+}
+
+function toggleSidebar() {
   const s = document.getElementById('sidebar');
   const o = document.getElementById('overlay');
   s.classList.toggle('open');
   o.style.display = s.classList.contains('open') ? 'block' : 'none';
 }
-function closeSidebar(){
+function closeSidebar() {
   document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('overlay').style.display='none';
+  document.getElementById('overlay').style.display = 'none';
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════
    WEATHER
-═══════════════════════════════════════════════════════════ */
-let weatherLoaded = false;
-let weatherData = null;
+══════════════════════════════════════════════════════════════ */
+let weatherLoaded = false, weatherData = null, weatherSource = 'mock';
 
-async function loadWeather(){
+async function loadWeather() {
   const city = document.getElementById('weather-city')?.value || 'Dhaka';
-  document.getElementById('weather-content').innerHTML = `<div class="analyzing"><div class="spinner"></div>Fetching weather for ${city}…</div>`;
-  try{
+  document.getElementById('weather-content').innerHTML = `<div class="analyzing"><div class="spinner"></div>${city}…</div>`;
+  try {
     const res = await fetch(`/api/weather?city=${encodeURIComponent(city)}`);
     const json = await res.json();
-    weatherData = json.data;
+    weatherData = json.data; weatherSource = json.source;
     weatherLoaded = true;
-    renderWeather(weatherData, json.source==='mock');
+    renderWeather(weatherData, json.source === 'mock');
     updateDashboardWeather(weatherData);
-  }catch(e){
-    document.getElementById('weather-content').innerHTML = `<div class="alert alert-error">⚠️ Could not load weather. Check connection.</div>`;
+  } catch(e) {
+    document.getElementById('weather-content').innerHTML = `<div class="alert alert-error">⚠️ Could not load weather.</div>`;
   }
 }
 
-function renderWeather(data, isMock){
+function renderWeather(data, isMock) {
+  const tr = t();
   const city = data.city?.name || 'Your Location';
   const today = data.list[0];
   const temp = Math.round(today.main.temp);
   const humid = today.main.humidity;
-  const wind = (today.wind?.speed||0).toFixed(1);
+  const wind = (today.wind?.speed || 0).toFixed(1);
   const desc = today.weather[0].description;
   const icon = getWeatherEmoji(today.weather[0].main);
-  const pop = Math.round((today.pop||0)*100);
+  const pop = Math.round((today.pop || 0) * 100);
   const pressure = today.main.pressure;
+  const feelsLike = Math.round(today.main.feels_like);
 
-  // Hazard alerts
-  const hazards = generateHazards(today, data.list);
-  const hazardHTML = hazards.map(h=>`
+  const hazards = generateHazards(today, tr);
+  const hazardHTML = hazards.map(h => `
     <div class="hazard-card" style="border-color:${h.color}">
-      <div class="hazard-icon">${h.icon}</div>
+      <span style="font-size:24px;flex-shrink:0">${h.icon}</span>
       <div><div class="hazard-title">${h.title}</div><div class="hazard-desc">${h.desc}</div></div>
     </div>`).join('');
 
-  // Forecast
   const seenDates = new Set();
-  const forecastDays = data.list.filter(item=>{
+  const forecastDays = data.list.filter(item => {
     const d = new Date(item.dt_txt).toDateString();
-    if(!seenDates.has(d)){ seenDates.add(d); return true; } return false;
-  }).slice(0,7);
+    if (!seenDates.has(d)) { seenDates.add(d); return true; } return false;
+  }).slice(0, 7);
 
-  const forecastHTML = forecastDays.map((item,i)=>{
+  const dayNames = lang === 'bn'
+    ? ['রবি','সোম','মঙ্গল','বুধ','বৃহঃ','শুক্র','শনি']
+    : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  const forecastHTML = forecastDays.map((item, i) => {
     const d = new Date(item.dt_txt);
-    const dname = i===0 ? 'Today' : d.toLocaleDateString('en',{weekday:'short'});
-    const t = Math.round(item.main.temp);
+    const dname = i === 0 ? tr.today : dayNames[d.getDay()];
     const ico = getWeatherEmoji(item.weather[0].main);
-    return `<div class="forecast-day ${i===0?'today':''}">
+    return `<div class="forecast-day ${i === 0 ? 'today' : ''}">
       <div class="fday">${dname}</div>
       <div class="ficon">${ico}</div>
-      <div class="ftemp">${t}°C</div>
+      <div class="ftemp">${Math.round(item.main.temp)}°C</div>
       <div style="font-size:10px;opacity:.6;margin-top:2px">${Math.round((item.pop||0)*100)}% 💧</div>
     </div>`;
   }).join('');
 
   document.getElementById('weather-content').innerHTML = `
-    ${isMock?'<div class="alert alert-warn">⚡ Demo data shown. Add OPENWEATHER_API_KEY for live weather.</div>':''}
+    ${isMock ? `<div class="alert alert-warn">⚡ ${lang==='bn'?'ডেমো তথ্য দেখানো হচ্ছে। লাইভ আবহাওয়ার জন্য OPENWEATHER_API_KEY যোগ করুন।':'Demo data shown. Add OPENWEATHER_API_KEY for live weather.'}</div>` : ''}
     <div class="weather-main">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px">
         <div>
@@ -592,60 +721,54 @@ function renderWeather(data, isMock){
           </div>
         </div>
         <div style="background:rgba(255,255,255,.1);border-radius:12px;padding:16px;font-size:13px;min-width:160px">
-          <div style="margin-bottom:6px">🌡️ Feels like <strong>${Math.round(today.main.feels_like)}°C</strong></div>
-          <div style="margin-bottom:6px">💧 Humidity <strong>${humid}%</strong></div>
-          <div style="margin-bottom:6px">🌬️ Wind <strong>${wind} m/s</strong></div>
-          <div>🌧️ Rain chance <strong>${pop}%</strong></div>
+          <div style="margin-bottom:6px">🌡️ ${tr.feelsLike} <strong>${feelsLike}°C</strong></div>
+          <div style="margin-bottom:6px">💧 ${tr.humidity} <strong>${humid}%</strong></div>
+          <div style="margin-bottom:6px">🌬️ ${tr.wind} <strong>${wind} m/s</strong></div>
+          <div>🌧️ ${tr.rainChance} <strong>${pop}%</strong></div>
         </div>
       </div>
       <div class="weather-details">
-        <div class="weather-detail"><div class="weather-detail-val">${humid}%</div><div class="weather-detail-key">Humidity</div></div>
-        <div class="weather-detail"><div class="weather-detail-val">${wind} m/s</div><div class="weather-detail-key">Wind Speed</div></div>
-        <div class="weather-detail"><div class="weather-detail-val">${pressure} hPa</div><div class="weather-detail-key">Pressure</div></div>
-        <div class="weather-detail"><div class="weather-detail-val">${pop}%</div><div class="weather-detail-key">Rain Chance</div></div>
+        <div class="weather-detail"><div class="weather-detail-val">${humid}%</div><div class="weather-detail-key">${tr.humidity}</div></div>
+        <div class="weather-detail"><div class="weather-detail-val">${wind} m/s</div><div class="weather-detail-key">${tr.wind}</div></div>
+        <div class="weather-detail"><div class="weather-detail-val">${pressure} hPa</div><div class="weather-detail-key">${tr.pressure}</div></div>
+        <div class="weather-detail"><div class="weather-detail-val">${pop}%</div><div class="weather-detail-key">${tr.rainChance}</div></div>
       </div>
     </div>
     <div class="card" style="margin-bottom:20px">
-      <div class="card-title"><span class="dot"></span> 7-Day Forecast</div>
+      <div class="card-title"><span class="dot"></span>${tr.forecast}</div>
       <div class="forecast-strip">${forecastHTML}</div>
     </div>
-    ${hazards.length ? `<div class="card">
-      <div class="card-title"><span class="dot" style="background:var(--amber)"></span> Agricultural Hazard Alerts</div>
-      <div class="alert-grid">${hazardHTML}</div>
-    </div>` : `<div class="alert alert-success">✅ No significant agricultural hazards detected for this period.</div>`}
+    ${hazards.length
+      ? `<div class="card"><div class="card-title"><span class="dot" style="background:var(--amber)"></span>${tr.hazardAlerts}</div><div class="alert-grid">${hazardHTML}</div></div>`
+      : `<div class="alert alert-success">✅ ${tr.noHazards}</div>`}
   `;
 
-  // Update topbar
   document.getElementById('topbar-weather').textContent = `${icon} ${temp}°C ${city}`;
-  document.getElementById('dash-temp').textContent = temp+'°C';
+  document.getElementById('dash-temp').textContent = temp + '°C';
 }
 
-function generateHazards(today, list){
-  const hazards = [];
-  const temp = today.main.temp;
-  const humid = today.main.humidity;
-  const rain = today.pop || 0;
-
-  if(temp > 35) hazards.push({icon:'🔥',title:'Heat Stress Alert',desc:`Temperature ${Math.round(temp)}°C — risk of crop wilting. Irrigate early morning.`,color:'#E53935'});
-  if(temp < 10) hazards.push({icon:'❄️',title:'Cold Stress Warning',desc:`Temperature ${Math.round(temp)}°C — frost risk. Cover sensitive crops tonight.`,color:'#1E88E5'});
-  if(humid > 85) hazards.push({icon:'🌫️',title:'High Humidity Alert',desc:`Humidity ${humid}% — increased fungal disease risk. Apply preventive fungicide.`,color:'#FB8C00'});
-  if(rain > 0.7) hazards.push({icon:'🌧️',title:'Heavy Rain Advisory',desc:'High rainfall expected. Ensure proper field drainage to prevent waterlogging.',color:'#039BE5'});
-  if(temp >= 28 && humid >= 75) hazards.push({icon:'🦠',title:'Disease Pressure High',desc:'Warm, humid conditions favor bacterial and fungal outbreaks. Scout fields daily.',color:'#8E24AA'});
-  return hazards;
+function generateHazards(today, tr) {
+  const h = [], temp = today.main.temp, humid = today.main.humidity, rain = today.pop || 0;
+  if (temp > 35) h.push({icon:'🔥',title:tr.heatAlert,desc:tr.heatDesc(Math.round(temp)),color:'#E53935'});
+  if (temp < 10) h.push({icon:'❄️',title:tr.coldAlert,desc:tr.coldDesc(Math.round(temp)),color:'#1E88E5'});
+  if (humid > 85) h.push({icon:'🌫️',title:tr.humidAlert,desc:tr.humidDesc(humid),color:'#FB8C00'});
+  if (rain > 0.7) h.push({icon:'🌧️',title:tr.rainAlert,desc:tr.rainDesc,color:'#039BE5'});
+  if (temp >= 28 && humid >= 75) h.push({icon:'🦠',title:tr.diseaseAlert,desc:tr.diseaseDesc,color:'#8E24AA'});
+  return h;
 }
 
-function getWeatherEmoji(cond){
-  const map = {Clear:'☀️',Clouds:'⛅',Rain:'🌧️',Drizzle:'🌦️',Thunderstorm:'⛈️',Snow:'❄️',Mist:'🌫️',Fog:'🌫️',Haze:'🌫️'};
-  return map[cond] || '🌤️';
+function getWeatherEmoji(cond) {
+  return {Clear:'☀️',Clouds:'⛅',Rain:'🌧️',Drizzle:'🌦️',Thunderstorm:'⛈️',Snow:'❄️',Mist:'🌫️',Fog:'🌫️',Haze:'🌫️'}[cond] || '🌤️';
 }
 
-function updateDashboardWeather(data){
+function updateDashboardWeather(data) {
+  const tr = t();
   const today = data.list[0];
   const temp = Math.round(today.main.temp);
   const icon = getWeatherEmoji(today.weather[0].main);
-  const humid = today.main.humidity;
-  const city = data.city?.name || 'Your Location';
-  document.getElementById('dash-temp').textContent = temp+'°C';
+  const city = data.city?.name || '';
+  document.getElementById('dash-temp').textContent = temp + '°C';
+  document.getElementById('topbar-weather').textContent = `${icon} ${temp}°C ${city}`;
   document.getElementById('dash-weather-inner').innerHTML = `
     <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px">
       <span style="font-size:40px">${icon}</span>
@@ -653,345 +776,358 @@ function updateDashboardWeather(data){
       <div style="font-size:13px;color:var(--muted);text-transform:capitalize">${today.weather[0].description} · ${city}</div></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;color:var(--muted)">
-      <div>💧 Humidity: <strong>${humid}%</strong></div>
-      <div>🌬️ Wind: <strong>${(today.wind?.speed||0).toFixed(1)} m/s</strong></div>
+      <div>💧 ${tr.humidity}: <strong>${today.main.humidity}%</strong></div>
+      <div>🌬️ ${tr.wind}: <strong>${(today.wind?.speed||0).toFixed(1)} m/s</strong></div>
     </div>`;
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════
    DISEASE DETECTION
-═══════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════════ */
 const dz = document.getElementById('drop-zone');
-dz.addEventListener('dragover', e=>{e.preventDefault();dz.classList.add('over')});
-dz.addEventListener('dragleave',()=>dz.classList.remove('over'));
-dz.addEventListener('drop',e=>{
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+dz.addEventListener('drop', e => {
   e.preventDefault(); dz.classList.remove('over');
   const file = e.dataTransfer.files[0];
-  if(file && file.type.startsWith('image/')) processLeafFile(file);
+  if (file && file.type.startsWith('image/')) processLeafFile(file);
 });
 
-function handleFileSelect(e){
+function handleFileSelect(e) {
   const file = e.target.files[0];
-  if(file) processLeafFile(file);
+  if (file) processLeafFile(file);
 }
 
-function processLeafFile(file){
+function processLeafFile(file) {
   const reader = new FileReader();
-  reader.onload = function(ev){
-    showDiseasAnalyzing(URL.createObjectURL(file));
-    const base64 = ev.target.result.split(',')[1];
-    submitDiseaseB64(base64);
+  reader.onload = ev => {
+    showDiseaseAnalyzing(URL.createObjectURL(file));
+    submitDiseaseB64(ev.target.result.split(',')[1]);
   };
   reader.readAsDataURL(file);
 }
 
-function analyzeFromSample(crop, name){
-  showDiseasAnalyzing(null, name);
-  // Simulate analysis for sample
-  setTimeout(()=>{
-    fetchDiseaseResult(null, null);
-  }, 400);
+function analyzeFromSample(crop) {
+  showDiseaseAnalyzing(null, crop);
+  setTimeout(() => fetchDiseaseResult(), 400);
 }
 
-function showDiseasAnalyzing(previewUrl, name){
+function showDiseaseAnalyzing(previewUrl, cropName) {
+  const tr = t();
   document.getElementById('disease-result').innerHTML = `
     <div class="result-panel">
       ${previewUrl ? `<img src="${previewUrl}" style="width:100%;height:200px;object-fit:cover;border-radius:10px;margin-bottom:16px"/>` : ''}
-      ${name ? `<div style="font-size:14px;font-weight:600;margin-bottom:12px">Analysing: ${name}</div>` : ''}
-      <div class="analyzing"><div class="spinner"></div>AI is analysing your leaf image…<br><small style="margin-top:8px;display:block;color:var(--muted)">Checking for 50+ plant diseases</small></div>
+      <div class="analyzing">
+        <div class="spinner"></div>
+        ${tr.analyzing}<br><small style="margin-top:8px;display:block;color:var(--muted)">${tr.checkingDiseases}</small>
+      </div>
     </div>`;
 }
 
-async function submitDiseaseB64(base64){
-  try{
-    const res = await fetch('/api/disease-detect',{
-      method:'POST',headers:{'Content-Type':'application/json'},
+async function submitDiseaseB64(base64) {
+  try {
+    const res = await fetch('/api/disease-detect', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({base64})
     });
     const json = await res.json();
     renderDiseaseResult(json.result, json.source);
-  }catch(e){ renderDiseaseResult(getMockDiseaseClient()); }
+  } catch(e) { renderDiseaseResult(getMockDiseaseClient()); }
 }
 
-async function fetchDiseaseResult(){
-  try{
-    const res = await fetch('/api/disease-detect',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({})});
+async function fetchDiseaseResult() {
+  try {
+    const res = await fetch('/api/disease-detect', {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: '{}'
+    });
     const json = await res.json();
     renderDiseaseResult(json.result, json.source);
-  }catch(e){ renderDiseaseResult(getMockDiseaseClient()); }
+  } catch(e) { renderDiseaseResult(getMockDiseaseClient()); }
 }
 
-function getMockDiseaseClient(){
+function getMockDiseaseClient() {
   return {
-    disease:'Early Blight (Alternaria solani)',confidence:91,severity:'Moderate',
+    disease:'Early Blight (Alternaria solani)', confidence:91, severity:'Moderate',
     symptoms:['Brown circular lesions with concentric rings','Yellow halo around spots','Lower leaves affected first'],
     causes:'Fungal infection favored by warm, humid conditions.',
-    treatment:['Remove infected leaves immediately','Apply copper-based fungicide every 7-10 days','Improve plant spacing'],
+    treatment:['Remove infected leaves immediately','Apply copper-based fungicide every 7–10 days','Improve plant spacing'],
     prevention:['Rotate crops annually','Use disease-resistant varieties','Avoid overhead irrigation'],
-    affectedCrop:'Tomato',urgency:'Medium'
+    affectedCrop:'Tomato', urgency:'Medium'
   };
 }
 
-function renderDiseaseResult(r, source){
+// Bilingual disease info
+const DISEASE_BN = {
+  'None':     { severity:'কোনোটি নয়', urgency_map:{Low:'কম',Medium:'মাঝারি',High:'বেশি',Critical:'জরুরি'} },
+  'Mild':     { severity:'সামান্য' },
+  'Moderate': { severity:'মাঝারি' },
+  'Severe':   { severity:'তীব্র' },
+  'Critical': { severity:'অতি-জরুরি' },
+};
+
+function renderDiseaseResult(r, source) {
+  const tr = t();
+  const isBn = lang === 'bn';
+  const severityClass = {None:'severity-none',Mild:'severity-mild',Moderate:'severity-moderate',Severe:'severity-severe',Critical:'severity-critical'}[r.severity] || 'severity-mild';
   const urgencyColors = {Low:'#2E7D32',Medium:'#F57F17',High:'#E65100',Critical:'#B71C1C'};
-  const severityClass = {None:'severity-none',Mild:'severity-mild',Moderate:'severity-moderate',Severe:'severity-severe',Critical:'severity-critical'};
   const color = urgencyColors[r.urgency] || '#555';
-  const sc = severityClass[r.severity] || 'severity-mild';
+
+  const severityLabel = isBn ? (DISEASE_BN[r.severity]?.severity || r.severity) : r.severity;
+  const urgencyLabel = isBn
+    ? {Low:'কম',Medium:'মাঝারি',High:'বেশি',Critical:'জরুরি'}[r.urgency] || r.urgency
+    : r.urgency;
+
+  const sourceBanner = source === 'mock'
+    ? `<div class="alert alert-info" style="margin-bottom:16px">ℹ️ ${tr.demoResult}</div>`
+    : `<div class="alert alert-success" style="margin-bottom:16px">${tr.hfResult}</div>`;
 
   document.getElementById('disease-result').innerHTML = `
     <div class="result-panel">
-      ${source==='mock'?'<div class="alert alert-info" style="margin-bottom:16px">ℹ️ Demo result. The AI model may be loading — try again in 20 seconds, or add a free HF_API_TOKEN for priority access.</div>':source==='huggingface'?'<div class="alert alert-success" style="margin-bottom:16px">🤗 Analysed by Hugging Face Plant Disease AI (PlantVillage model)</div>':''}
+      ${sourceBanner}
       <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px">
         <div>
-          <h3 style="font-family:\'DM Serif Display\',serif;font-size:20px;color:var(--forest)">${r.disease}</h3>
-          ${r.affectedCrop ? `<div style="font-size:13px;color:var(--muted);margin-top:2px">🌱 Affected crop: <strong>${r.affectedCrop}</strong></div>`:''}
+          <h3 style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--forest)">${r.disease}</h3>
+          ${r.affectedCrop ? `<div style="font-size:13px;color:var(--muted);margin-top:2px">🌱 ${r.affectedCrop}</div>` : ''}
         </div>
         <div style="text-align:right">
-          <div class="disease-badge ${sc}">${r.severity} Severity</div>
-          <div style="font-size:12px;color:${color};font-weight:700;margin-top:4px">⚡ ${r.urgency} Urgency</div>
+          <div class="disease-badge ${severityClass}">${severityLabel}</div>
+          <div style="font-size:12px;color:${color};font-weight:700;margin-top:4px">⚡ ${tr.urgency}: ${urgencyLabel}</div>
         </div>
       </div>
       <div style="margin-bottom:12px">
-        <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Detection Confidence</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:4px">${tr.detectionConf}</div>
         <div style="display:flex;align-items:center;gap:10px">
           <div class="confidence-bar" style="flex:1"><div class="confidence-fill" style="width:${r.confidence}%"></div></div>
           <strong style="font-size:15px;color:var(--forest)">${r.confidence}%</strong>
         </div>
       </div>
       <div style="font-size:13px;color:var(--muted);background:var(--cream);padding:12px;border-radius:8px;margin-bottom:16px;line-height:1.6">
-        <strong style="color:var(--forest)">Cause:</strong> ${r.causes}
+        <strong style="color:var(--forest)">${tr.cause}:</strong> ${r.causes}
       </div>
       <div class="result-grid">
         <div class="result-section">
-          <h4>🔍 Symptoms Observed</h4>
+          <h4>🔍 ${tr.symptoms}</h4>
           <ul class="result-list">${(r.symptoms||[]).map(s=>`<li>${s}</li>`).join('')}</ul>
         </div>
         <div class="result-section">
-          <h4>✅ Prevention Tips</h4>
+          <h4>✅ ${tr.prevention}</h4>
           <ul class="result-list">${(r.prevention||[]).map(p=>`<li>${p}</li>`).join('')}</ul>
         </div>
       </div>
       <div class="result-section" style="margin-top:16px">
-        <h4>💊 Treatment Protocol</h4>
-        <ul class="result-list">${(r.treatment||[]).map((t,i)=>`<li><span style="font-weight:700;color:var(--forest);min-width:16px">${i+1}.</span>${t}</li>`).join('')}</ul>
+        <h4>💊 ${tr.treatment}</h4>
+        <ul class="result-list">${(r.treatment||[]).map((tx,i)=>`<li><span style="font-weight:700;color:var(--forest);min-width:16px">${i+1}.</span>${tx}</li>`).join('')}</ul>
       </div>
       <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn btn-primary btn-sm" onclick="document.getElementById('file-input').click()">📷 Analyse Another</button>
-        <button class="btn btn-outline btn-sm" onclick="printResult()">🖨️ Print Report</button>
+        <button class="btn btn-primary btn-sm" onclick="document.getElementById('file-input').click()">📷 ${tr.analyseAnother}</button>
+        <button class="btn btn-outline btn-sm" onclick="window.print()">🖨️ ${tr.printReport}</button>
       </div>
     </div>`;
 }
 
-function printResult(){
-  window.print();
-}
-
-/* ═══════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════
    CROP RECOMMENDER
-═══════════════════════════════════════════════════════════ */
-const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const MONTH_NUMS = [1,2,3,4,5,6,7,8,9,10,11,12];
-let selectedMonth = new Date().getMonth()+1;
+══════════════════════════════════════════════════════════════ */
+const MONTHS_EN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTHS_BN = ['জানু','ফেব্রু','মার্চ','এপ্রি','মে','জুন','জুলাই','আগ','সেপ্ট','অক্টো','নভে','ডিসে'];
+
+let selectedMonth = new Date().getMonth() + 1;
 let selectedCat = 'All';
 let cropsData = [];
 
-async function loadCrops(){
+async function loadCrops() {
   const res = await fetch('/api/crops');
   const j = await res.json();
   cropsData = j.crops;
 }
 
-function renderCrops(){
+function renderCrops() {
+  const tr = t();
+  const MONTHS = lang === 'bn' ? MONTHS_BN : MONTHS_EN;
+
   // Month buttons
   const mf = document.getElementById('month-filter');
-  if(!mf.children.length){
-    mf.innerHTML = `<button class="month-btn ${selectedMonth===0?'active':''}" onclick="filterMonth(0)">All Months</button>`
-      + MONTHS.map((m,i)=>`<button class="month-btn ${selectedMonth===i+1?'active':''}" onclick="filterMonth(${i+1})">${m}</button>`).join('');
-  }
-  // Cat buttons
+  mf.innerHTML = `<button class="month-btn ${selectedMonth===0?'active':''}" onclick="filterMonth(0)">${tr.allMonths}</button>`
+    + MONTHS.map((m, i) => `<button class="month-btn ${selectedMonth===i+1?'active':''}" onclick="filterMonth(${i+1})">${m}</button>`).join('');
+
+  // Category buttons
+  const CATS_EN = ['All','Grain','Vegetable','Fruit','Pulse','Oilseed','Spice'];
+  const CATS_BN = ['সব','শস্য','সবজি','ফল','ডাল','তেলবীজ','মশলা'];
+  const CATS = lang === 'bn' ? CATS_BN : CATS_EN;
   const cf = document.getElementById('cat-filter');
-  if(!cf.children.length){
-    const cats = ['All','Grain','Vegetable','Fruit','Pulse','Oilseed','Spice'];
-    cf.innerHTML = cats.map(c=>`<button class="cat-btn ${selectedCat===c?'active':''}" onclick="filterCat('${c}')">${c}</button>`).join('');
-  }
+  cf.innerHTML = CATS_EN.map((c, i) => `<button class="cat-btn ${selectedCat===c?'active':''}" onclick="filterCatI(${i},'${c}')">${CATS[i]}</button>`).join('');
+
   renderCropGrid();
 }
 
-function filterMonth(m){
+function filterMonth(m) {
   selectedMonth = m;
-  document.querySelectorAll('.month-btn').forEach((b,i)=>b.classList.toggle('active',i===0?m===0:i===m));
-  renderCropGrid();
+  renderCrops();
 }
-function filterCat(c){
-  selectedCat = c;
-  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.toggle('active',b.textContent===c));
-  renderCropGrid();
+function filterCatI(i, enCat) {
+  selectedCat = enCat;
+  renderCrops();
 }
 
-function renderCropGrid(){
-  const grid = document.getElementById('crop-grid');
+function renderCropGrid() {
+  const tr = t();
+  const MONTHS = lang === 'bn' ? MONTHS_BN : MONTHS_EN;
+
   let filtered = cropsData;
-  if(selectedMonth > 0) filtered = filtered.filter(c=>c.months.includes(selectedMonth));
-  if(selectedCat !== 'All') filtered = filtered.filter(c=>c.category===selectedCat);
+  if (selectedMonth > 0) filtered = filtered.filter(c => c.months.includes(selectedMonth));
+  if (selectedCat !== 'All') filtered = filtered.filter(c => c.category === selectedCat);
 
-  if(!filtered.length){
-    grid.innerHTML = `<div class="no-crops" style="grid-column:1/-1">
-      <div class="nc-icon">🌾</div>
-      <p>No crops found for this filter. Try a different month or category.</p></div>`;
+  const grid = document.getElementById('crop-grid');
+  if (!filtered.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted)"><div style="font-size:48px;margin-bottom:12px">🌾</div><p>${tr.noCrops}</p></div>`;
     return;
   }
 
-  grid.innerHTML = filtered.map(c=>`
+  const CROP_NAMES_BN = {
+    Rice:'ধান',Wheat:'গম',Tomato:'টমেটো',Potato:'আলু',Onion:'পেঁয়াজ',
+    Maize:'ভুট্টা',Mango:'আম',Banana:'কলা',Lentil:'মসুর',
+    Sunflower:'সূর্যমুখী',Cucumber:'শসা',Chili:'মরিচ'
+  };
+  const CAT_BN = {Grain:'শস্য',Vegetable:'সবজি',Fruit:'ফল',Pulse:'ডাল',Oilseed:'তেলবীজ',Spice:'মশলা'};
+
+  grid.innerHTML = filtered.map(c => {
+    const name = lang === 'bn' ? (CROP_NAMES_BN[c.name] || c.name) : c.name;
+    const cat  = lang === 'bn' ? (CAT_BN[c.category] || c.category) : c.category;
+    const seasons = c.season.map((s, i) => {
+      const idx = MONTHS_EN.indexOf(s);
+      return lang === 'bn' && idx >= 0 ? MONTHS_BN[idx] : s;
+    });
+    return `
     <div class="crop-card">
       <div class="crop-card-header">
         <div class="crop-emoji">${c.emoji}</div>
-        <div>
-          <div class="crop-card-name">${c.name}</div>
-          <div class="crop-card-cat">${c.category}</div>
-        </div>
+        <div><div class="crop-card-name">${name}</div><div class="crop-card-cat">${cat}</div></div>
       </div>
       <div class="crop-card-body">
         <div class="crop-meta">
-          <div class="crop-meta-item"><strong>${c.growDays} days</strong><span>Growth period</span></div>
-          <div class="crop-meta-item"><strong>${c.yieldPerAcre}</strong><span>Yield / acre</span></div>
-          <div class="crop-meta-item"><strong>${c.water}</strong><span>Water need</span></div>
-          <div class="crop-meta-item"><strong>${c.temp}</strong><span>Temperature</span></div>
+          <div class="crop-meta-item"><strong>${c.growDays} ${tr.daysLabel}</strong><span>${tr.growDays}</span></div>
+          <div class="crop-meta-item"><strong>${c.yieldPerAcre}</strong><span>${tr.yield}</span></div>
+          <div class="crop-meta-item"><strong>${c.water}</strong><span>${tr.water}</span></div>
+          <div class="crop-meta-item"><strong>${c.temp}</strong><span>${tr.temp}</span></div>
         </div>
-        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">🪨 Soil: <strong style="color:var(--forest)">${c.soil}</strong></div>
-        <div class="crop-season-tags">${c.season.map(s=>`<span class="season-tag">${s}</span>`).join('')}</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">🪨 ${tr.soil}: <strong style="color:var(--forest)">${c.soil}</strong></div>
+        <div class="crop-season-tags">${seasons.map(s=>`<span class="season-tag">${s}</span>`).join('')}</div>
         <div class="crop-tip">💡 ${c.tips}</div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
-/* ═══════════════════════════════════════════════════════════
-   FERTILIZER CALC
-═══════════════════════════════════════════════════════════ */
-async function calcFertilizer(){
+/* ══════════════════════════════════════════════════════════════
+   FERTILIZER CALCULATOR
+══════════════════════════════════════════════════════════════ */
+async function calcFertilizer() {
+  const tr = t();
   const crop = document.getElementById('fert-crop').value;
   const area = parseFloat(document.getElementById('fert-area').value);
   const unit = document.getElementById('fert-unit').value;
   const soil = document.getElementById('fert-soil').value;
   const irr  = document.getElementById('fert-irrigation').value;
 
-  if(!crop){ showAlert('fert-results','Please select a crop.','error'); return; }
-  if(!area || area<=0){ showAlert('fert-results','Please enter a valid area.','error'); return; }
+  const resultsEl = document.getElementById('fert-results');
+  if (!crop) { resultsEl.innerHTML = `<div class="alert alert-error">${tr.cropErr}</div>`; return; }
+  if (!area || area <= 0) { resultsEl.innerHTML = `<div class="alert alert-error">${tr.areaErr}</div>`; return; }
 
-  document.getElementById('fert-results').innerHTML = `<div class="analyzing"><div class="spinner"></div>Calculating dosage…</div>`;
-
-  try{
-    const res = await fetch('/api/fertilizer',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({crop,area,unit,soilType:soil,irrigationType:irr})
+  resultsEl.innerHTML = `<div class="analyzing"><div class="spinner"></div>${tr.calculating}</div>`;
+  try {
+    const res = await fetch('/api/fertilizer', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({crop,area,unit,soilType:soil,irrigationType:irr})
     });
-    const d = await res.json();
-    renderFertResult(d);
-  }catch(e){
-    document.getElementById('fert-results').innerHTML = `<div class="alert alert-error">Error calculating. Try again.</div>`;
+    renderFertResult(await res.json());
+  } catch(e) {
+    resultsEl.innerHTML = `<div class="alert alert-error">${lang==='bn'?'হিসাব করতে ব্যর্থ। আবার চেষ্টা করুন।':'Error calculating. Try again.'}</div>`;
   }
 }
 
-function renderFertResult(d){
-  const pestRows = d.pestProtocols.map(p=>`
+function renderFertResult(d) {
+  const tr = t();
+  const pestRows = d.pestProtocols.map(p => `
     <div class="pest-card">
-      <div>
-        <div class="pest-name">🐛 ${p.pest}</div>
-        <div class="pest-treatments">
-          <div class="pest-treatment"><span class="tag tag-chemical">Chemical</span> ${p.chemical} — <strong>${p.dose}</strong></div>
-          <div class="pest-treatment"><span class="tag tag-organic">Organic</span> ${p.organic}</div>
-        </div>
+      <div class="pest-name">🐛 ${p.pest}</div>
+      <div class="pest-treatments">
+        <div class="pest-treatment"><span class="tag tag-chemical">${tr.chemical_tag}</span> ${p.chemical} — <strong>${p.dose}</strong></div>
+        <div class="pest-treatment"><span class="tag tag-organic">${tr.organic_tag}</span> ${p.organic}</div>
       </div>
     </div>`).join('');
 
+  const CROP_NAMES_BN = {Rice:'ধান',Wheat:'গম',Tomato:'টমেটো',Potato:'আলু',Onion:'পেঁয়াজ',Maize:'ভুট্টা',Mango:'আম',Banana:'কলা',Lentil:'মসুর',Sunflower:'সূর্যমুখী',Cucumber:'শসা',Chili:'মরিচ'};
+  const cropLabel = lang === 'bn' ? (CROP_NAMES_BN[d.crop] || d.crop) : d.crop;
+  const unitLabel = lang === 'bn' ? (d.unit === 'acres' ? 'একর' : 'হেক্টর') : d.unit;
+
   document.getElementById('fert-results').innerHTML = `
-    <!-- NPK Header -->
     <div class="card">
-      <div class="card-title"><span class="dot"></span> NPK Requirement — ${d.crop} (${d.area} ${d.unit} = ${d.areaInHa} ha)</div>
+      <div class="card-title"><span class="dot"></span>${tr.npkReq} — ${cropLabel} (${d.area} ${unitLabel} = ${d.areaInHa} ha)</div>
       <div class="npk-visual">
-        <div class="npk-bar-card">
-          <div class="npk-letter n">N</div>
-          <div class="npk-val">${d.npk.N}</div>
-          <div class="npk-unit">kg Nitrogen</div>
-        </div>
-        <div class="npk-bar-card">
-          <div class="npk-letter p">P</div>
-          <div class="npk-val">${d.npk.P}</div>
-          <div class="npk-unit">kg Phosphorus</div>
-        </div>
-        <div class="npk-bar-card">
-          <div class="npk-letter k">K</div>
-          <div class="npk-val">${d.npk.K}</div>
-          <div class="npk-unit">kg Potassium</div>
-        </div>
+        <div class="npk-bar-card"><div class="npk-letter n">N</div><div class="npk-val">${d.npk.N}</div><div class="npk-unit">${tr.kgNitrogen}</div></div>
+        <div class="npk-bar-card"><div class="npk-letter p">P</div><div class="npk-val">${d.npk.P}</div><div class="npk-unit">${tr.kgPhosphorus}</div></div>
+        <div class="npk-bar-card"><div class="npk-letter k">K</div><div class="npk-val">${d.npk.K}</div><div class="npk-unit">${tr.kgPotassium}</div></div>
       </div>
     </div>
-
-    <!-- Chemical -->
     <div class="card">
-      <div class="card-title"><span class="dot" style="background:#2980B9"></span> Chemical Fertilizers <span class="tag tag-chemical" style="margin-left:auto">Chemical</span></div>
+      <div class="card-title"><span class="dot" style="background:#2980B9"></span>${tr.chemical} <span class="tag tag-chemical" style="margin-left:auto">${tr.chemical_tag}</span></div>
       <table class="result-table">
-        <tr><th>Fertilizer</th><th>Amount</th><th>Application Schedule</th></tr>
-        <tr><td><strong>Urea (46% N)</strong></td><td><strong>${d.chemical.urea.amount} ${d.chemical.urea.unit}</strong></td><td style="color:var(--muted)">${d.chemical.urea.schedule}</td></tr>
-        <tr><td><strong>SSP (16% P₂O₅)</strong></td><td><strong>${d.chemical.ssp.amount} ${d.chemical.ssp.unit}</strong></td><td style="color:var(--muted)">${d.chemical.ssp.schedule}</td></tr>
-        <tr><td><strong>MOP (60% K₂O)</strong></td><td><strong>${d.chemical.mop.amount} ${d.chemical.mop.unit}</strong></td><td style="color:var(--muted)">${d.chemical.mop.schedule}</td></tr>
+        <tr><th>${tr.fertilizer}</th><th>${tr.amount}</th><th>${tr.schedule}</th></tr>
+        <tr><td><strong>${lang==='bn'?'ইউরিয়া (৪৬% N)':'Urea (46% N)'}</strong></td><td><strong>${d.chemical.urea.amount} kg</strong></td><td style="color:var(--muted)">${lang==='bn'?'ভাগ: ১/৩ মূল, ১/৩ কুশি, ১/৩ শীষ':d.chemical.urea.schedule}</td></tr>
+        <tr><td><strong>${lang==='bn'?'SSP (১৬% P₂O₅)':'SSP (16% P₂O₅)'}</strong></td><td><strong>${d.chemical.ssp.amount} kg</strong></td><td style="color:var(--muted)">${lang==='bn'?'রোপণের আগে সম্পূর্ণ প্রয়োগ করুন':d.chemical.ssp.schedule}</td></tr>
+        <tr><td><strong>${lang==='bn'?'MOP (৬০% K₂O)':'MOP (60% K₂O)'}</strong></td><td><strong>${d.chemical.mop.amount} kg</strong></td><td style="color:var(--muted)">${lang==='bn'?'ভাগ: ১/২ মূল, ১/২ ৪৫ দিনে':d.chemical.mop.schedule}</td></tr>
       </table>
     </div>
-
-    <!-- Organic -->
     <div class="card">
-      <div class="card-title"><span class="dot" style="background:#2E7D32"></span> Organic Inputs <span class="tag tag-organic" style="margin-left:auto">Organic</span></div>
+      <div class="card-title"><span class="dot" style="background:#2E7D32"></span>${tr.organic} <span class="tag tag-organic" style="margin-left:auto">${tr.organic_tag}</span></div>
       <table class="result-table">
-        <tr><th>Input</th><th>Amount</th><th>Application Schedule</th></tr>
-        <tr><td><strong>Compost / FYM</strong></td><td><strong>${d.organic.compost.amount} ${d.organic.compost.unit}</strong></td><td style="color:var(--muted)">${d.organic.compost.schedule}</td></tr>
-        <tr><td><strong>Vermicompost</strong></td><td><strong>${d.organic.vermicompost.amount} ${d.organic.vermicompost.unit}</strong></td><td style="color:var(--muted)">${d.organic.vermicompost.schedule}</td></tr>
-        <tr><td><strong>Neem Cake</strong></td><td><strong>${d.organic.neem_cake.amount} ${d.organic.neem_cake.unit}</strong></td><td style="color:var(--muted)">${d.organic.neem_cake.schedule}</td></tr>
+        <tr><th>${tr.input}</th><th>${tr.amount}</th><th>${tr.schedule}</th></tr>
+        <tr><td><strong>${lang==='bn'?'কম্পোস্ট / জৈব সার':'Compost / FYM'}</strong></td><td><strong>${d.organic.compost.amount} kg</strong></td><td style="color:var(--muted)">${lang==='bn'?'রোপণের ২ সপ্তাহ আগে মাটিতে মেশান':d.organic.compost.schedule}</td></tr>
+        <tr><td><strong>${lang==='bn'?'ভার্মিকম্পোস্ট':'Vermicompost'}</strong></td><td><strong>${d.organic.vermicompost.amount} kg</strong></td><td style="color:var(--muted)">${lang==='bn'?'বপন বা রোপণের সময় দিন':d.organic.vermicompost.schedule}</td></tr>
+        <tr><td><strong>${lang==='bn'?'নিম কেক':'Neem Cake'}</strong></td><td><strong>${d.organic.neem_cake.amount} kg</strong></td><td style="color:var(--muted)">${lang==='bn'?'রোপণের ১ সপ্তাহ আগে মাটিতে মেশান':d.organic.neem_cake.schedule}</td></tr>
       </table>
     </div>
-
-    <!-- Pest Protocols -->
     <div class="card">
-      <div class="card-title"><span class="dot" style="background:#C62828"></span> Pest & Disease Treatment Protocols <span class="tag tag-pest" style="margin-left:auto">Pest Control</span></div>
+      <div class="card-title"><span class="dot" style="background:#C62828"></span>${tr.pestProtocols} <span class="tag tag-pest" style="margin-left:auto">${lang==='bn'?'কীটনাশক':'Pest Control'}</span></div>
       <div style="display:flex;flex-direction:column;gap:10px">${pestRows}</div>
-      <div class="alert alert-warn" style="margin-top:16px">⚠️ Always follow label instructions. Wear protective equipment when applying pesticides.</div>
+      <div class="alert alert-warn" style="margin-top:16px">${tr.pestWarn}</div>
     </div>
-
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px">
-      <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Print Report</button>
-      <button class="btn btn-outline btn-sm" onclick="calcFertilizer()">🔄 Recalculate</button>
+      <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ ${tr.print}</button>
+      <button class="btn btn-outline btn-sm" onclick="calcFertilizer()">🔄 ${tr.recalc}</button>
     </div>`;
 }
 
-function showAlert(targetId, msg, type){
-  const el = document.getElementById(targetId);
-  el.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
-}
-
-/* ═══════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════
    DASHBOARD CROPS
-═══════════════════════════════════════════════════════════ */
-function renderDashCrops(){
-  const month = new Date().getMonth()+1;
-  const monthName = MONTHS[month-1];
-  const available = cropsData.filter(c=>c.months.includes(month));
+══════════════════════════════════════════════════════════════ */
+function renderDashCrops() {
+  const tr = t();
+  const month = new Date().getMonth() + 1;
+  const monthName = lang === 'bn' ? MONTHS_BN[month-1] : MONTHS_EN[month-1];
+  const available = cropsData.filter(c => c.months.includes(month));
   const el = document.getElementById('dash-crops-list');
-  if(available.length){
-    el.innerHTML = `<div style="font-size:12px;color:var(--muted);width:100%;margin-bottom:8px">Best crops to plant in <strong>${monthName}</strong>:</div>`
-      + available.slice(0,6).map(c=>`<span style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;background:rgba(74,124,89,.08);border-radius:6px;font-size:13px;border:1px solid var(--border)">${c.emoji} ${c.name}</span>`).join('');
+  const CROP_NAMES_BN = {Rice:'ধান',Wheat:'গম',Tomato:'টমেটো',Potato:'আলু',Onion:'পেঁয়াজ',Maize:'ভুট্টা',Mango:'আম',Banana:'কলা',Lentil:'মসুর',Sunflower:'সূর্যমুখী',Cucumber:'শসা',Chili:'মরিচ'};
+  if (available.length) {
+    el.innerHTML = `<div style="font-size:12px;color:var(--muted);width:100%;margin-bottom:8px">${tr.bestCropsIn} <strong>${monthName}</strong>:</div>`
+      + available.slice(0, 6).map(c => {
+        const name = lang === 'bn' ? (CROP_NAMES_BN[c.name] || c.name) : c.name;
+        return `<span style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;background:rgba(74,124,89,.08);border-radius:6px;font-size:13px;border:1px solid var(--border)">${c.emoji} ${name}</span>`;
+      }).join('');
     document.getElementById('dash-crops').textContent = available.length;
   } else {
-    el.innerHTML = `<span style="color:var(--muted);font-size:14px">No crops for ${monthName}</span>`;
+    el.innerHTML = `<span style="color:var(--muted);font-size:14px">—</span>`;
   }
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════
    INIT
-═══════════════════════════════════════════════════════════ */
-async function init(){
+══════════════════════════════════════════════════════════════ */
+async function init() {
   await loadCrops();
   renderDashCrops();
-  loadWeather(); // load weather silently for dashboard
+  loadWeather();
 }
-
 init();
 </script>
 </body>

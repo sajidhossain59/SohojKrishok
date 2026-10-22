@@ -69,52 +69,46 @@ app.post('/api/disease-detect', upload.single('leaf'), async (req, res) => {
       ? req.file.buffer.toString('base64')
       : req.body.base64;
 
-    const apiKey = process.env.HF_API_TOKEN;
+    const mimeType = req.file ? req.file.mimetype : 'image/jpeg';
 
-    if (imageData && apiKey) {
+    // Use Hugging Face free Inference API — plant disease classification model
+    // Free token from huggingface.co/settings/tokens (read-only, no billing needed)
+    const apiKey = process.env.HF_API_TOKEN;
+    if (imageData) {
       try {
         const imgBuffer = Buffer.from(imageData, 'base64');
 
-        // Updated Hugging Face router endpoint for improved stability
+        // NEW HuggingFace router endpoint (migrated from api-inference.huggingface.co)
         const HF_MODEL = 'linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification';
-        const hfUrl = `https://router.huggingface.co/hf-inference/models/${HF_MODEL}`;
+        const headers = { 'Content-Type': 'application/octet-stream' };
+        if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
 
-        const headers = { 
-          'Content-Type': 'application/octet-stream',
-          'Authorization': `Bearer ${apiKey}`
-        };
+        const hfRes = await fetch(
+          `https://router.huggingface.co/hf-inference/models/${HF_MODEL}`,
+          { method: 'POST', headers, body: imgBuffer }
+        );
 
-        // Abort request if DNS/network takes longer than 6 seconds
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 6000);
+        if (!hfRes.ok) {
+          const errText = await hfRes.text();
+          throw new Error(`HF returned ${hfRes.status}: ${errText}`);
+        }
+        const hfData = await hfRes.json();
 
-        const hfRes = await fetch(hfUrl, { 
-          method: 'POST', 
-          headers, 
-          body: imgBuffer,
-          signal: controller.signal
-        });
-        clearTimeout(timeoutId);
-
-        if (hfRes.ok) {
-          const hfData = await hfRes.json();
-          if (Array.isArray(hfData) && hfData.length > 0) {
-            const top = hfData[0];
-            const result = mapHFLabelToResult(top.label, Math.round(top.score * 100));
-            return res.json({ success: true, result, source: 'huggingface' });
-          }
-        } else {
-          console.warn(`HF API returned status ${hfRes.status}. Falling back to mock detection.`);
+        // hfData is array of { label, score } sorted by confidence
+        if (Array.isArray(hfData) && hfData.length > 0) {
+          const top = hfData[0];
+          const result = mapHFLabelToResult(top.label, Math.round(top.score * 100));
+          return res.json({ success: true, result, source: 'huggingface' });
         }
       } catch (hfErr) {
-        console.warn('HF network/DNS error encountered. Falling back to mock detection:', hfErr.message);
+        console.error('HF inference error:', hfErr.message);
+        // Fall through to mock
       }
     }
 
-    // Fallback response if HF fails, times out, or no token is present
-    return res.json({ success: true, result: getMockDisease(), source: 'mock' });
+    // Mock disease detection
+    res.json({ success: true, result: getMockDisease(), source: 'mock' });
   } catch (err) {
-    console.error('Disease detection route error:', err.message);
     res.json({ success: true, result: getMockDisease(), source: 'mock' });
   }
 });
@@ -160,12 +154,14 @@ function getMockDisease() {
 
 // ─── Map HuggingFace PlantVillage label → rich result object ────────────────
 function mapHFLabelToResult(rawLabel, confidence) {
+  // PlantVillage labels look like: "Tomato___Early_blight" or "Potato___healthy"
   const clean = rawLabel.replace(/___/g, ' — ').replace(/_/g, ' ');
   const parts = rawLabel.split('___');
   const crop = (parts[0] || 'Unknown').replace(/_/g, ' ');
   const diseasePart = (parts[1] || 'Unknown').replace(/_/g, ' ');
   const isHealthy = /healthy/i.test(diseasePart);
 
+  // Disease knowledge base
   const db = {
     'Early blight': {
       severity: 'Moderate', urgency: 'Medium',
@@ -225,6 +221,7 @@ function mapHFLabelToResult(rawLabel, confidence) {
     },
   };
 
+  // Find best matching entry
   let info = db['healthy'];
   if (!isHealthy) {
     const key = Object.keys(db).find(k =>
@@ -302,6 +299,7 @@ function calculateFertilizer(crop, area, unit, soilType, irrigationType) {
 
   const base = npkBase[crop] || { N:100, P:60, K:60 };
 
+  // Soil type adjustments
   const soilMod = { 'Sandy': 1.2, 'Loam': 1.0, 'Clay': 0.85, 'Silt': 0.9 };
   const mod = soilMod[soilType] || 1.0;
 
@@ -309,13 +307,16 @@ function calculateFertilizer(crop, area, unit, soilType, irrigationType) {
   const P = Math.round(base.P * mod * areaInHa);
   const K = Math.round(base.K * mod * areaInHa);
 
+  // Organic equivalents
   const compostKg = Math.round(areaInHa * 5000);
   const vermicompostKg = Math.round(areaInHa * 2000);
 
+  // Chemical equivalents (conversion factors)
   const ureaKg = Math.round(N / 0.46);
   const sspKg = Math.round(P / 0.16);
   const mopKg = Math.round(K / 0.60);
 
+  // Pest treatment protocols
   const pestProtocols = getPestProtocols(crop, areaInHa);
 
   return {
