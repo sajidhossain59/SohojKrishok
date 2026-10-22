@@ -538,7 +538,9 @@ const T = {
     hazardAlerts:'Agricultural Hazard Alerts', noHazards:'No significant hazards detected.',
     analyzing:'AI is analysing your leaf…', checkingDiseases:'Checking for 50+ plant diseases',
     demoResult:'Demo result. The AI model may be loading — try again in 20 seconds.',
-    hfResult:'🤗 Analysed by Hugging Face Plant Disease AI',
+    cropHealthResult:'Analysed by Kindwise crop.health AI — 23 crops, 288 disease classes',
+    hfResult:'🤗 Analysed by Hugging Face Plant Disease AI (fallback model)',
+    otherPossible:'Other possible diagnoses',
     detectionConf:'Detection Confidence', cause:'Cause',
     symptoms:'Symptoms Observed', prevention:'Prevention Tips', treatment:'Treatment Protocol',
     analyseAnother:'Analyse Another', printReport:'Print Report',
@@ -572,7 +574,9 @@ const T = {
     hazardAlerts:'কৃষি বিপদ সংকেত', noHazards:'কোনো উল্লেখযোগ্য বিপদ নেই।',
     analyzing:'এআই পাতা বিশ্লেষণ করছে…', checkingDiseases:'৫০+ উদ্ভিদ রোগ পরীক্ষা করা হচ্ছে',
     demoResult:'ডেমো ফলাফল। এআই মডেল লোড হচ্ছে — ২০ সেকেন্ড পরে আবার চেষ্টা করুন।',
-    hfResult:'🤗 হাগিং ফেস প্ল্যান্ট ডিজিজ এআই দ্বারা বিশ্লেষিত',
+    cropHealthResult:'কিন্ডওয়াইজ crop.health এআই দ্বারা বিশ্লেষিত — ২৩টি ফসল, ২৮৮টি রোগ শ্রেণী',
+    hfResult:'🤗 হাগিং ফেস প্ল্যান্ট ডিজিজ এআই দ্বারা বিশ্লেষিত (ফলব্যাক মডেল)',
+    otherPossible:'অন্যান্য সম্ভাব্য রোগ',
     detectionConf:'শনাক্তকরণের নিশ্চিততা', cause:'কারণ',
     symptoms:'লক্ষণসমূহ', prevention:'প্রতিরোধ টিপস', treatment:'চিকিৎসা পদ্ধতি',
     analyseAnother:'আরেকটি বিশ্লেষণ করুন', printReport:'রিপোর্ট প্রিন্ট করুন',
@@ -879,6 +883,8 @@ function renderDiseaseResult(r, source) {
 
   const sourceBanner = source === 'mock'
     ? `<div class="alert alert-info" style="margin-bottom:16px">ℹ️ ${tr.demoResult}</div>`
+    : source === 'crop.health'
+    ? `<div class="alert alert-success" style="margin-bottom:16px">🌿 ${tr.cropHealthResult}</div>`
     : `<div class="alert alert-success" style="margin-bottom:16px">${tr.hfResult}</div>`;
 
   document.getElementById('disease-result').innerHTML = `
@@ -918,6 +924,7 @@ function renderDiseaseResult(r, source) {
         <h4>💊 ${tr.treatment}</h4>
         <ul class="result-list">${(r.treatment||[]).map((tx,i)=>`<li><span style="font-weight:700;color:var(--forest);min-width:16px">${i+1}.</span>${tx}</li>`).join('')}</ul>
       </div>
+      ${r.otherSuggestions ? `<div style="font-size:12px;color:var(--muted);margin-top:12px;padding:10px;background:var(--cream);border-radius:8px">🔍 ${tr.otherPossible}: <strong>${r.otherSuggestions}</strong></div>` : ''}
       <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
         <button class="btn btn-primary btn-sm" onclick="document.getElementById('file-input').click()">📷 ${tr.analyseAnother}</button>
         <button class="btn btn-outline btn-sm" onclick="window.print()">🖨️ ${tr.printReport}</button>

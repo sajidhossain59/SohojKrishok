@@ -63,26 +63,71 @@ function getMockWeather(city) {
 }
 
 // ─── Crop Disease Detection ──────────────────────────────────────────────────
+// Model 1: Kindwise crop.health — 23 crops, 288 diseases/pests
+//   - Free 100 credits on signup: admin.kindwise.com
+//   - Trial proxy (no key, 10 req/IP/24h): agents.kindwise.com/crop_health/api/v1/identification
+//   - With key: crop.kindwise.com/api/v1/identification
+// Model 2: HuggingFace router — MobileNetV2 PlantVillage (38 classes)
+//   - Free with HF_API_TOKEN, router.huggingface.co
+// Fallback: rich mock data
 app.post('/api/disease-detect', upload.single('leaf'), async (req, res) => {
   try {
     const imageData = req.file
       ? req.file.buffer.toString('base64')
       : req.body.base64;
-
     const mimeType = req.file ? req.file.mimetype : 'image/jpeg';
 
-    // Use Hugging Face free Inference API — plant disease classification model
-    // Free token from huggingface.co/settings/tokens (read-only, no billing needed)
-    const apiKey = process.env.HF_API_TOKEN;
+    // ── MODEL 1: Kindwise crop.health ──────────────────────────────
     if (imageData) {
       try {
-        const imgBuffer = Buffer.from(imageData, 'base64');
+        const cropHealthKey = process.env.CROP_HEALTH_API_KEY;
+        // Use dedicated endpoint if key present, else trial proxy (no key needed)
+        const endpoint = cropHealthKey
+          ? 'https://crop.kindwise.com/api/v1/identification'
+          : 'https://agents.kindwise.com/crop_health/api/v1/identification';
 
-        // NEW HuggingFace router endpoint (migrated from api-inference.huggingface.co)
+        const headers = { 'Content-Type': 'application/json' };
+        if (cropHealthKey) headers['Api-Key'] = cropHealthKey;
+
+        const chRes = await fetch(
+          `${endpoint}?details=description,treatment,cause,symptoms&language=en`,
+          {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({
+              images: [`data:${mimeType};base64,${imageData}`],
+              latitude: 23.8103,   // Dhaka default coords
+              longitude: 90.4125,
+              similar_images: false,
+            }),
+          }
+        );
+
+        if (!chRes.ok) {
+          const errText = await chRes.text();
+          throw new Error(`crop.health returned ${chRes.status}: ${errText}`);
+        }
+
+        const chData = await chRes.json();
+        const result = mapCropHealthResult(chData);
+        if (result) {
+          return res.json({ success: true, result, source: 'crop.health' });
+        }
+        throw new Error('No suggestions in crop.health response');
+
+      } catch (chErr) {
+        console.error('crop.health error:', chErr.message);
+        // Fall through to Model 2
+      }
+
+      // ── MODEL 2: HuggingFace router (fallback) ──────────────────
+      try {
+        const hfToken = process.env.HF_API_TOKEN;
         const HF_MODEL = 'linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification';
         const headers = { 'Content-Type': 'application/octet-stream' };
-        if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
+        if (hfToken) headers['Authorization'] = `Bearer ${hfToken}`;
 
+        const imgBuffer = Buffer.from(imageData, 'base64');
         const hfRes = await fetch(
           `https://router.huggingface.co/hf-inference/models/${HF_MODEL}`,
           { method: 'POST', headers, body: imgBuffer }
@@ -93,25 +138,98 @@ app.post('/api/disease-detect', upload.single('leaf'), async (req, res) => {
           throw new Error(`HF returned ${hfRes.status}: ${errText}`);
         }
         const hfData = await hfRes.json();
-
-        // hfData is array of { label, score } sorted by confidence
         if (Array.isArray(hfData) && hfData.length > 0) {
-          const top = hfData[0];
-          const result = mapHFLabelToResult(top.label, Math.round(top.score * 100));
+          const result = mapHFLabelToResult(hfData[0].label, Math.round(hfData[0].score * 100));
           return res.json({ success: true, result, source: 'huggingface' });
         }
+        throw new Error('Empty HF response');
+
       } catch (hfErr) {
-        console.error('HF inference error:', hfErr.message);
+        console.error('HuggingFace fallback error:', hfErr.message);
         // Fall through to mock
       }
     }
 
-    // Mock disease detection
+    // ── FALLBACK: rich mock data ────────────────────────────────────
     res.json({ success: true, result: getMockDisease(), source: 'mock' });
   } catch (err) {
     res.json({ success: true, result: getMockDisease(), source: 'mock' });
   }
 });
+
+// ─── Map Kindwise crop.health response → unified result object ───────────────
+function mapCropHealthResult(data) {
+  try {
+    const suggestions = data?.result?.disease?.suggestions;
+    if (!Array.isArray(suggestions) || suggestions.length === 0) return null;
+
+    const top = suggestions[0];
+    const name = top.name || 'Unknown';
+    const prob = Math.round((top.probability || 0) * 100);
+    const details = top.details || {};
+
+    // Extract crop name from is_plant check or name
+    let affectedCrop = 'Unknown';
+    const cropSuggestions = data?.result?.crop?.suggestions;
+    if (Array.isArray(cropSuggestions) && cropSuggestions.length > 0) {
+      affectedCrop = cropSuggestions[0].name || 'Unknown';
+    }
+
+    const isHealthy = /healthy|no disease/i.test(name);
+
+    // Severity from probability
+    let severity = 'None', urgency = 'Low';
+    if (!isHealthy) {
+      if (prob >= 80)      { severity = 'Severe';   urgency = 'High'; }
+      else if (prob >= 50) { severity = 'Moderate'; urgency = 'Medium'; }
+      else                 { severity = 'Mild';     urgency = 'Low'; }
+    }
+
+    // Parse treatment steps — API returns structured or free-text
+    const treatmentRaw = details.treatment || {};
+    const chemTreatment = Array.isArray(treatmentRaw.chemical)
+      ? treatmentRaw.chemical
+      : (typeof treatmentRaw.chemical === 'string' ? [treatmentRaw.chemical] : []);
+    const bioTreatment = Array.isArray(treatmentRaw.biological)
+      ? treatmentRaw.biological
+      : (typeof treatmentRaw.biological === 'string' ? [treatmentRaw.biological] : []);
+    const prevTreatment = Array.isArray(treatmentRaw.prevention)
+      ? treatmentRaw.prevention
+      : (typeof treatmentRaw.prevention === 'string' ? [treatmentRaw.prevention] : []);
+
+    const treatment = [...chemTreatment, ...bioTreatment].slice(0, 4);
+    const prevention = prevTreatment.slice(0, 3);
+
+    // Fallbacks if treatment empty
+    if (!treatment.length) treatment.push('Consult a local agronomist for treatment advice.');
+    if (!prevention.length) prevention.push('Scout crops regularly and maintain field hygiene.');
+
+    // Symptoms from description
+    const descText = details.description || '';
+    const symptoms = descText
+      ? descText.split(/[.;]/).filter(s => s.trim().length > 10).slice(0, 3).map(s => s.trim())
+      : ['Visible abnormalities on leaf surface', 'Discoloration or lesions present', 'Possible wilting or necrosis'];
+
+    // Other top suggestions as additional info
+    const otherSuggestions = suggestions.slice(1, 3).map(s => `${s.name} (${Math.round(s.probability*100)}%)`).join(', ');
+
+    return {
+      disease: isHealthy ? `Healthy ${affectedCrop}` : name,
+      confidence: prob,
+      severity,
+      urgency,
+      affectedCrop,
+      causes: details.cause || details.description?.slice(0, 200) || 'Pathogen detected. See treatment protocol.',
+      symptoms,
+      treatment,
+      prevention,
+      otherSuggestions: otherSuggestions || null,
+    };
+  } catch (e) {
+    console.error('mapCropHealthResult error:', e.message);
+    return null;
+  }
+}
 
 function getMockDisease() {
   const diseases = [
