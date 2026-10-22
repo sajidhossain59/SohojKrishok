@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Smart Garden AI</title>
+<title>Sohoj Krishok</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 :root{
@@ -40,7 +40,6 @@ body.bn .en-block{display:none}
 .layout{display:flex;min-height:100vh}
 .sidebar{width:240px;background:var(--forest);color:var(--white);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;transition:.3s}
 .sidebar-logo{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,.1)}
-.sidebar-logo .leaf{font-size:28px;margin-bottom:6px}
 .sidebar-logo h1{font-family:'DM Serif Display',serif;font-size:18px;line-height:1.2;color:var(--amber)}
 body.bn .sidebar-logo h1{font-family:'Hind Siliguri',sans-serif;font-size:16px}
 .sidebar-logo span{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:.04em}
@@ -65,12 +64,12 @@ body.bn .topbar-title{font-family:'Hind Siliguri',sans-serif;font-size:20px}
 .page.active{display:block}
 
 /* ── HERO ──────────────────────────────────────────────────── */
-.hero{background:linear-gradient(135deg,var(--forest) 0%,var(--forest-mid) 60%,var(--sage) 100%);border-radius:var(--r-lg);padding:40px;color:white;margin-bottom:28px;position:relative;overflow:hidden}
+.hero {background: #000 url(bg.jpg) no-repeat center / cover;border-radius: var(--r-lg);padding: 40px;color: white;margin-bottom: 28px;position: relative;overflow: hidden;}
 .hero::after{content:'';position:absolute;right:-30px;top:-30px;width:200px;height:200px;background:rgba(232,168,69,.08);border-radius:50%;pointer-events:none}
 .hero-sub{font-size:12px;letter-spacing:.08em;color:var(--amber);margin-bottom:8px}
 .hero h2{font-family:'DM Serif Display',serif;font-size:32px;line-height:1.2;margin-bottom:16px}
 body.bn .hero h2{font-family:'Hind Siliguri',sans-serif;font-size:26px}
-.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+.hero-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:24px}
 .hero-stat{background:rgba(255,255,255,.08);border-radius:10px;padding:14px 16px;backdrop-filter:blur(10px)}
 .hero-stat-val{font-size:22px;font-weight:700;color:var(--amber)}
 .hero-stat-label{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
@@ -253,8 +252,7 @@ body.bn .welcome-state h3{font-family:'Hind Siliguri',sans-serif}
 <!-- ══ SIDEBAR ═══════════════════════════════════════════════ -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
-    <div class="leaf">🌿</div>
-    <h1><span class="en-text">Smart Garden AI</span><span class="bn-text">স্মার্ট গার্ডেন এআই</span></h1>
+    <h1><span class="en-text">Sohoj Krishok</span><span class="bn-text">সহজ কৃষক </span></h1>
     <span><span class="en-text">Agricultural Intelligence</span><span class="bn-text">কৃষি বুদ্ধিমত্তা</span></span>
   </div>
   <nav class="sidebar-nav">
@@ -281,7 +279,7 @@ body.bn .welcome-state h3{font-family:'Hind Siliguri',sans-serif}
       <span class="en-text">Fertilizer Calc</span><span class="bn-text">সার হিসাবক</span>
     </div>
   </nav>
-  <div class="sidebar-footer">Smart Garden AI v1.0<br/>© 2025 AgriTech</div>
+  <div class="sidebar-footer">Sohoj Krishok v1.0<br/>© 2026 Sylhet Engineering College</div>
 </aside>
 
 <!-- ══ MAIN ═══════════════════════════════════════════════════ -->
@@ -297,7 +295,6 @@ body.bn .welcome-state h3{font-family:'Hind Siliguri',sans-serif}
         <button class="lang-btn en-btn active" onclick="setLang('en')">EN</button>
         <button class="lang-btn bn-btn" onclick="setLang('bn')">বাং</button>
       </div>
-      <div class="user-avatar">JR</div>
     </div>
   </div>
 
@@ -314,10 +311,6 @@ body.bn .welcome-state h3{font-family:'Hind Siliguri',sans-serif}
         <span class="bn-text">স্মার্ট চাষের জন্য রিয়েল-টাইম তথ্য।</span>
       </p>
       <div class="hero-stats">
-        <div class="hero-stat">
-          <div class="hero-stat-val" id="dash-area">—</div>
-          <div class="hero-stat-label"><span class="en-text">Field Area (ha)</span><span class="bn-text">জমির আয়তন (হেক্টর)</span></div>
-        </div>
         <div class="hero-stat">
           <div class="hero-stat-val" id="dash-crops">12</div>
           <div class="hero-stat-label"><span class="en-text">Seasonal Crops</span><span class="bn-text">মৌসুমি ফসল</span></div>
@@ -517,20 +510,17 @@ function setLang(l) {
   document.body.classList.toggle('bn', l === 'bn');
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`.lang-btn.${l}-btn`)?.classList.add('active');
-  // Re-render dynamic content with new language
   if (weatherData) renderWeather(weatherData, weatherSource === 'mock');
   if (cropsData.length) renderCropGrid();
   updatePageTitle();
 }
 
-// Apply saved language on load
 if (lang === 'bn') {
   document.body.classList.add('bn');
   document.querySelector('.bn-btn')?.classList.add('active');
   document.querySelector('.en-btn')?.classList.remove('active');
 }
 
-// Translation helper
 const T = {
   en: {
     today:'Today', humidity:'Humidity', wind:'Wind Speed', pressure:'Pressure',
@@ -860,7 +850,6 @@ function getMockDiseaseClient() {
   };
 }
 
-// Bilingual disease info
 const DISEASE_BN = {
   'None':     { severity:'কোনোটি নয়', urgency_map:{Low:'কম',Medium:'মাঝারি',High:'বেশি',Critical:'জরুরি'} },
   'Mild':     { severity:'সামান্য' },
@@ -952,12 +941,10 @@ function renderCrops() {
   const tr = t();
   const MONTHS = lang === 'bn' ? MONTHS_BN : MONTHS_EN;
 
-  // Month buttons
   const mf = document.getElementById('month-filter');
   mf.innerHTML = `<button class="month-btn ${selectedMonth===0?'active':''}" onclick="filterMonth(0)">${tr.allMonths}</button>`
     + MONTHS.map((m, i) => `<button class="month-btn ${selectedMonth===i+1?'active':''}" onclick="filterMonth(${i+1})">${m}</button>`).join('');
 
-  // Category buttons
   const CATS_EN = ['All','Grain','Vegetable','Fruit','Pulse','Oilseed','Spice'];
   const CATS_BN = ['সব','শস্য','সবজি','ফল','ডাল','তেলবীজ','মশলা'];
   const CATS = lang === 'bn' ? CATS_BN : CATS_EN;
